@@ -54,22 +54,23 @@ class FlatnessCalculationByVariance(ProfileMetric):
         values = self.profile.values
         cax_value = get_cax_value(values)
         fifty_percent_value = cax_value * 0.5
-
+        cax_index = self.profile.cax_index
         left_field_index, right_field_index = get_transition_indices(values, fifty_percent_value)
+        if left_field_index > cax_index or right_field_index < cax_index:
+            raise ValueError("CAX index is not between the left and right field indices.")
 
-        if left_field_index
-
-        left_roi_index = (int) (self.profile.cax_index - left_field_index) * 0.8 + 
-        right_roi_index = (int) (right_field_index - self.profile.cax_index) * 0.8
+        left_roi_index = (int) (cax_index - (cax_index - left_field_index) * self.in_field_ratio)
+        right_roi_index = (int) (cax_index + (right_field_index - cax_index) * self.in_field_ratio)
 
         print(cax_value)
         print("indices:", left_field_index, right_field_index)
+        print("roi indices:", left_roi_index, right_roi_index)
         print(self.profile.field_width_px)
-        print(self.profile.field_indices(in_field_ratio=0.8))
+        print(self.profile.field_indices(in_field_ratio=self.in_field_ratio))
         return (
             100
-            * (values[left_field_index:right_field_index+1].max() - values[left_field_index:right_field_index+1].min())
-            / (values[left_field_index:right_field_index+1].max() + values[left_field_index:right_field_index+1].min())
+            * (values[left_roi_index:right_roi_index+1].max() - values[left_roi_index:right_roi_index+1].min())
+            / (values[left_roi_index:right_roi_index+1].max() + values[left_roi_index:right_roi_index+1].min())
         )
 
 class FlatnessCalculationByRatio(ProfileMetric):
@@ -95,7 +96,7 @@ field_analyzer.analyze(
     # x_width=0.02,
     # y_width=0.02,
     normalization=Normalization.BEAM_CENTER,
-    edge_type=Edge.INFLECTION_DERIVATIVE,
+    #edge_type=Edge.FWHM,
     ground=True,
     metrics=(
         PenumbraLeftMetric(),
