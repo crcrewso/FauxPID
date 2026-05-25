@@ -108,6 +108,54 @@ class FlatnessCalculationByRatio(ProfileMetric):
             * (values[left_roi_index:right_roi_index+1].max())
             / (values[left_roi_index:right_roi_index+1].min())
         )
+
+class FlatnessCalculationByCaxVariance(ProfileMetric):
+    name = "Flatness Calculation by CAX Variance"
+    unit = ""
+
+    def __init__(self, color="g", linestyle="-."):
+        super().__init__(color=color, linestyle=linestyle)
+
+    def calculate(self) -> float:
+        
+        values = self.profile.values
+        cax_value = get_cax_value(values)
+        fifty_percent_value = cax_value * 0.5
+        cax_index = self.profile.cax_index
+        left_field_index, right_field_index = get_transition_indices(values, fifty_percent_value)
+        if left_field_index > cax_index or right_field_index < cax_index:
+            raise ValueError("CAX index is not between the left and right field indices.")
+
+        left_roi_index = left_field_index
+        right_roi_index = right_field_index
+        return (
+            (values[left_roi_index:right_roi_index+1].max()
+            - values[left_roi_index:right_roi_index+1].min())
+            / cax_value
+        )
+
+class FlatnessCalculationByCaxRatio(ProfileMetric):
+    name = "Flatness Calculation by CAX Ratio"
+    unit = ""
+
+    def __init__(self, color="g", linestyle="-."):
+        super().__init__(color=color, linestyle=linestyle)
+
+    def calculate(self) -> float:
+        values = self.profile.values
+        cax_value = get_cax_value(values)
+        fifty_percent_value = cax_value * 0.5
+        cax_index = self.profile.cax_index
+        left_field_index, right_field_index = get_transition_indices(values, fifty_percent_value)
+        if left_field_index > cax_index or right_field_index < cax_index:
+            raise ValueError("CAX index is not between the left and right field indices.")
+
+        left_roi_index = (int) (cax_index - (cax_index - left_field_index) * 0.9)
+        right_roi_index = (int) (cax_index + (right_field_index - cax_index) * 0.9)
+        return (
+            (values[left_roi_index:right_roi_index+1].max())
+            / cax_value
+        )
     
 ### TESTING DELETE LATER
 path = 'Solstice-m12_d18_2025-FS_EPID_MLC 10x38.dcm'
@@ -126,7 +174,9 @@ field_analyzer.analyze(
         FlatnessDifferenceMetric(),
         FlatnessCalculationByVariance(),
         FlatnessRatioMetric(),
-        FlatnessCalculationByRatio()
+        FlatnessCalculationByRatio(), 
+        FlatnessCalculationByCaxVariance(),
+        FlatnessCalculationByCaxRatio()
     ),
 )
 print(field_analyzer.results())
