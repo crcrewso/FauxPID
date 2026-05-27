@@ -9,6 +9,8 @@ then wire up the `run_analysis` function at the bottom to call your main logic.
 import tkinter as tk
 from tkinter import ttk, filedialog
 import threading
+from pathlib import Path
+from create_image import generate_flatness_images
 
 # ── Customize your options here ──────────────────────────────────────────────
 
@@ -283,12 +285,14 @@ def run_analysis(output_dir, image_type_options, display_options, status_callbac
     """
     import time  # remove once you add real logic
 
-    status_callback("Generating images…")
-    time.sleep(1.5)  # ← replace with your image generation code
+    status_callback("Folder setting up")
+    #time.sleep(1.5)  # ← replace with your image generation code
+    output_images_dir = Path(output_dir) / "DICOM_GENERATION_OUTPUT" / "IMAGES"
 
     for opt in image_type_options:
-        status_callback(f"Running {opt}…")
-        time.sleep(0.8)  # ← replace with actual analysis per option
+        status_callback(f"Generating {opt} images…")
+        generate_flatness_images(dir_path=output_images_dir) 
+
 
     # Example: respect display options
     if "Show preview after generation" in display_options:
