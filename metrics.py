@@ -42,7 +42,15 @@ def get_transition_indices(values: np.ndarray, threshold: float) -> tuple[int, i
     
     return left_transition, right_transition
 
+
+
 class FlatnessCalculationByVariance(ProfileMetric):
+    """
+    This metric calculates the flatness of a profile by taking 
+    80% of the field region calculated using Full Width Half Max (FWHM) and finding (max-min)/(max+min). 
+    This assumes each pixel in the profile corresponds to a consistent length in mm, 
+    which may not always be the case.
+    """
     name = "Flatness Calculation by Variance"
     unit = "%"
 
@@ -69,6 +77,11 @@ class FlatnessCalculationByVariance(ProfileMetric):
         )
 
 class FlatnessCalculationByRatio(ProfileMetric):
+    """
+    This metric calculates the flatness ratio of a profile based on the IEC Standard 976. 
+    The region of interest (ROI) is dependent on the field size, which is determined by FWHM. 
+    The ratio is then the max/min within the ROI. 
+    """
     name = "Flatness Calculation by Ratio (IEC)"
     unit = "%"
 
@@ -77,7 +90,7 @@ class FlatnessCalculationByRatio(ProfileMetric):
 
     def calculate(self) -> float:
         
-        values = self.profile.values
+        values = self.profile.values 
         cax_value = get_cax_value(values)
         fifty_percent_value = cax_value * 0.5
         cax_index = self.profile.cax_index
@@ -110,6 +123,10 @@ class FlatnessCalculationByRatio(ProfileMetric):
         )
 
 class FlatnessCalculationByCaxVariance(ProfileMetric):
+    """
+    This metric calculates the flatness of a profile by finding 
+    (max-min)/CAX value within the field found by FWHM. 
+    """
     name = "Flatness Calculation by CAX Variance"
     unit = ""
 
