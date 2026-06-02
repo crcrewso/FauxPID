@@ -1,7 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
-
-import pydicom
+import math
 
 from pylinac import FieldProfileAnalysis, Centering, Normalization, Edge
 from pylinac.metrics.profile import (
@@ -21,9 +20,6 @@ def get_cax_value(values: np.ndarray) -> float:
 # Finds the indices of the left and right transitions in the profile, where the values cross a specified threshold. The left transition is found by iterating from the beginning of the profile until a value greater than the threshold is found, while the right transition is found by iterating from the end of the profile until a value greater than the threshold is found. If either transition is not found, a ValueError is raised.
 def get_transition_indices(values: np.ndarray, threshold: float) -> tuple[int, int]:
     length = len(values)
-
-    print(threshold)
-    print(values.max())
 
     left_transition = -1
     for i, val in enumerate(values):
@@ -114,8 +110,6 @@ class FlatnessCalculationByRatio(ProfileMetric):
             right_roi_index = (int) (cax_index + (right_length_mm * 0.8) * self.profile.dpmm)
         else:
             right_roi_index = (int) (cax_index + (right_length_mm - 60) * self.profile.dpmm)
-        print ("left_roi_index:", left_roi_index)
-        print ("right_roi_index:", right_roi_index)
         return (
             100
             * (values[left_roi_index:right_roi_index+1].max())
@@ -152,6 +146,10 @@ class FlatnessCalculationByCaxVariance(ProfileMetric):
         )
 
 class FlatnessCalculationByCaxRatio(ProfileMetric):
+    """
+    This metric calculates the flatness of a profile by finding 
+    max/CAX value within 90% of the field found by FWHM. 
+    """
     name = "Flatness Calculation by CAX Ratio"
     unit = ""
 
@@ -174,7 +172,101 @@ class FlatnessCalculationByCaxRatio(ProfileMetric):
             / cax_value
         )
     
-### TESTING DELETE LATER
+class SymmetryCalculationByCAXPointDifference(ProfileMetric):
+    """
+    This metric calculates the symmetry of a profile by finding 
+    the maximum difference between symmetric points with respect to the CAX. 
+    """
+    name = "Symmetry Calculation by CAX Point Difference"
+    unit = "%"
+
+    def __init__(self, color="g", linestyle="-."):
+        super().__init__(color=color, linestyle=linestyle)
+
+    def calculate(self) -> float:
+        values = self.profile.values
+        cax_value = get_cax_value(values)
+        fifty_percent_value = cax_value * 0.5
+        cax_index = self.profile.cax_index
+        left_field_index, right_field_index = get_transition_indices(values, fifty_percent_value)
+        if left_field_index > cax_index or right_field_index < cax_index:
+            raise ValueError("CAX index is not between the left and right field indices.")
+
+        left_roi_index = (int) (cax_index - (cax_index - left_field_index) * 0.8)
+        right_roi_index = (int) (cax_index + (right_field_index - cax_index) * 0.8)
+
+        left_index = math.ceil(self.profile.cax_index - 1)
+        right_index = math.floor(self.profile.cax_index + 1)
+
+        max_difference = 0
+        while left_index >= left_roi_index and right_index < right_roi_index:
+            difference = abs(values[left_index] - values[right_index])
+            if difference > max_difference:
+                max_difference = difference
+            left_index -= 1
+            right_index += 1
+
+        return max_difference / cax_value * 100
+    
+class SymmetryCalculationByPointRatio(ProfileMetric):
+    """
+    This metric calculates the symmetry point ratio of a profile based on the IEC Standard 976.  
+    The field size is determined using FWHM and the ROI from the length of the field. 
+    The ratio is calculated by finding the maximum ratio between symmetric points with respect to the CAX. 
+    This assumes each pixel in the profile corresponds to a consistent length in mm, which may not always be the case.
+    """
+    name = "Symmetry Calculation by Point Ratio (IEC 976)"
+    unit = "%"
+
+    def __init__(self, color="g", linestyle="-."):
+        super().__init__(color=color, linestyle=linestyle)
+
+    def calculate(self) -> float:
+        values = self.profile.values
+        cax_value = get_cax_value(values)
+        fifty_percent_value = cax_value * 0.5
+        cax_index = self.profile.cax_index
+        left_field_index, right_field_index = get_transition_indices(values, fifty_percent_value)
+        if left_field_index > cax_index or right_field_index < cax_index:
+            raise ValueError("CAX index is not between the left and right field indices.")
+
+        left_roi_index = (int) (cax_index - (cax_index - left_field_index) * 0.8)
+        right_roi_index = (int) (cax_index + (right_field_index - cax_index) * 0.8)
+
+        left_index = math.ceil(self.profile.cax_index - 1)
+        right_index = math.floor(self.profile.cax_index + 1)
+
+        max_ratio = 0
+        while left_index >= left_roi_index and right_index < right_roi_index:
+            ratio = values[left_index] / values[right_index]
+            if ratio > max_ratio:
+                max_ratio = ratio
+            left_index -= 1
+            right_index += 1
+
+        return max_ratio * 100
+
+def run_analysis_on_path(dcm_path) -> str:
+    try:
+        analysis = FieldProfileAnalysis(str(dcm_path))
+        analysis.analyze(
+            centering=Centering.BEAM_CENTER,
+            normalization=Normalization.BEAM_CENTER,
+            ground=True,
+            metrics=(
+                FlatnessCalculationByVariance(),
+                FlatnessCalculationByRatio(), 
+                FlatnessCalculationByCaxVariance(),
+                FlatnessCalculationByCaxRatio(),
+                SymmetryCalculationByCAXPointDifference
+            ),
+        )
+        return analysis.results()
+    except Exception as e:
+        return f"Error analyzing {dcm_path.name}: {str(e)}"
+
+
+## TESTING DELETE LATER
 path = 'Solstice-m12_d18_2025-FS_EPID_MLC 10x38.dcm'
 field_analyzer = FieldProfileAnalysis(path)
 field_analyzer.analyze(
@@ -193,7 +285,8 @@ field_analyzer.analyze(
         FlatnessRatioMetric(),
         FlatnessCalculationByRatio(), 
         FlatnessCalculationByCaxVariance(),
-        FlatnessCalculationByCaxRatio()
+        FlatnessCalculationByCaxRatio(),
+        SymmetryCalculationByCAXPointDifference()
     ),
 )
 print(field_analyzer.results())

@@ -25,7 +25,7 @@ Usage (called from run_analysis in analysis_gui.py):
 """
 
 from pathlib import Path
-from your_metrics import run_pylinac_analysis  # ← replace with your import
+from metrics import run_analysis_on_path  # ← replace with your import
 
 
 _GENERATION_ROOT = "DICOM_GENERATION_OUTPUT"
@@ -47,8 +47,8 @@ def analyze_all(
         status_callback: Callable that accepts a string — updates the GUI status bar.
     """
     base         = Path(output_dir)
-    images_root  = base / _GENERATION_ROOT / _IMAGES_DIR
-    analysis_root = base / _GENERATION_ROOT / _ANALYSIS_DIR
+    images_root  = base / _IMAGES_DIR
+    analysis_root = base / _ANALYSIS_DIR
 
     if not images_root.exists():
         status_callback(f"⚠  Images folder not found: {images_root}")
@@ -71,7 +71,7 @@ def analyze_all(
         status_callback(f"[{i}/{len(dcm_files)}] {relative}")
 
         try:
-            result_str = run_pylinac_analysis(dcm_path)  # ← your function here
+            result_str = run_analysis_on_path(dcm_path)  # ← your function here
             output_path.write_text(result_str, encoding="utf-8")
         except Exception as exc:
             msg = f"✖  Failed on {relative}: {exc}"

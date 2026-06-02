@@ -10,7 +10,9 @@ import tkinter as tk
 from tkinter import ttk, filedialog
 import threading
 from pathlib import Path
+from dicom_analysis import analyze_all
 from create_image import generate_flatness_images
+
 
 # ── Customize your options here ──────────────────────────────────────────────
 
@@ -274,8 +276,7 @@ class AnalysisGUI(tk.Tk):
 
 def run_analysis(output_dir, image_type_options, display_options, status_callback):
     """
-    Replace the body of this function with your image generation / analysis logic.
-
+    Calls image generation and analysis functions based on the user's selections in the GUI.
     Args:
         output_dir      (str):       Folder path chosen by the user.
         image_type_options (list[str]): Names of checked image type options.
@@ -286,12 +287,14 @@ def run_analysis(output_dir, image_type_options, display_options, status_callbac
     import time  # remove once you add real logic
 
     status_callback("Folder setting up")
-    #time.sleep(1.5)  # ← replace with your image generation code
-    output_images_dir = Path(output_dir) / "DICOM_GENERATION_OUTPUT" / "IMAGES"
+    output_gen_dir = Path(output_dir) / "DICOM_GENERATION_OUTPUT"
+    images_dir = output_gen_dir / "IMAGES"
 
-    for opt in image_type_options:
-        status_callback(f"Generating {opt} images…")
-        generate_flatness_images(dir_path=output_images_dir) 
+    for image_type in image_type_options:
+        status_callback(f"Generating {image_type} images…")
+        generate_flatness_images(dir_path=images_dir)
+
+    analyze_all(output_dir=output_gen_dir, status_callback=status_callback)
 
 
     # Example: respect display options

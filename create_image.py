@@ -16,8 +16,6 @@ from pylinac.core.image_generator import AS1200Image, AS1000Image
 import pylinac.core.image_generator.layers as layers
 
 
-# In[3]:
-
 
 def generate_dicom(file_out_name, layers):
     as1200 = AS1200Image()
@@ -66,6 +64,43 @@ def generate_flatness_images(dir_path):
     ]
     file_path = dir_path / "flatness_filtered_10x10.dcm"
     as1200 = generate_dicom(file_path, field_layers)
+
+    field_layers = [
+    layers.FilteredFieldLayer(
+    field_size_mm=(100, 100), 
+    alpha=1.0, 
+    gaussian_height=0.03, 
+    gaussian_sigma_mm=33.968,
+    cax_offset_mm=(0, 0)), 
+    layers.GaussianFilterLayer()
+    ]
+    file_path = dir_path / "flatness_two_percent_variance_10x10.dcm"
+    as1200 = generate_dicom(file_path, field_layers)
+
+    field_layers = [
+    layers.FilteredFieldLayer(
+    field_size_mm=(100, 100), 
+    alpha=1.0, 
+    gaussian_height=0.03, 
+    gaussian_sigma_mm=30.92,
+    cax_offset_mm=(0, 0)), 
+    layers.GaussianFilterLayer()
+    ]
+    file_path = dir_path / "flatness_two_percent_IEC_ratio_10x10.dcm"
+    as1200 = generate_dicom(file_path, field_layers)
+
+    field_layers = [
+    layers.FilteredFieldLayer(
+    field_size_mm=(100, 100), 
+    alpha=1.0, 
+    gaussian_height=0.0222, 
+    gaussian_sigma_mm=32,
+    cax_offset_mm=(0, 0)), 
+    layers.GaussianFilterLayer()
+    ]
+    file_path = dir_path / "flatness_two_percent_CAX_ratio_10x10.dcm"
+    as1200 = generate_dicom(file_path, field_layers)
+
 
     field_layers = [
         layers.FilterFreeFieldLayer(
