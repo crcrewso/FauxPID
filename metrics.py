@@ -9,7 +9,8 @@ from pylinac.metrics.profile import (
     PenumbraRightMetric,
     SymmetryAreaMetric,
     FlatnessDifferenceMetric,
-    FlatnessRatioMetric
+    FlatnessRatioMetric,
+    SymmetryPointDifferenceMetric,
 )
 
 # Finds the value of the central axis (CAX) by taking the average of the two middle values in the profile. This is a common method for finding the CAX value in a profile, as it is less sensitive to noise than taking the maximum value.
@@ -230,21 +231,46 @@ class SymmetryCalculationByPointRatio(ProfileMetric):
         if left_field_index > cax_index or right_field_index < cax_index:
             raise ValueError("CAX index is not between the left and right field indices.")
 
-        left_roi_index = (int) (cax_index - (cax_index - left_field_index) * 0.8)
-        right_roi_index = (int) (cax_index + (right_field_index - cax_index) * 0.8)
+        left_length_mm = (cax_index - left_field_index) / self.profile.dpmm
+        right_length_mm = (right_field_index - cax_index) / self.profile.dpmm
+
+        if left_length_mm < 100:
+            left_roi_index = (int) (cax_index - (left_length_mm - 20) * self.profile.dpmm)
+        elif left_length_mm < 300:
+            left_roi_index = (int) (cax_index - (left_length_mm * 0.8) * self.profile.dpmm)
+        else:
+            left_roi_index = (int) (cax_index - (left_length_mm - 60) * self.profile.dpmm)
+
+        if right_length_mm < 100:
+            right_roi_index = (int) (cax_index + (right_length_mm - 20) * self.profile.dpmm)
+        elif right_length_mm < 300:
+            right_roi_index = (int) (cax_index + (right_length_mm * 0.8) * self.profile.dpmm)
+        else:
+            right_roi_index = (int) (cax_index + (right_length_mm - 60) * self.profile.dpmm)
 
         left_index = math.ceil(self.profile.cax_index - 1)
         right_index = math.floor(self.profile.cax_index + 1)
 
-        max_ratio = 0
+        max_difference = 0
         while left_index >= left_roi_index and right_index < right_roi_index:
-            ratio = values[left_index] / values[right_index]
-            if ratio > max_ratio:
-                max_ratio = ratio
+            difference = abs(values[left_index] - values[right_index])
+            if difference > max_difference:
+                max_difference = difference
             left_index -= 1
             right_index += 1
 
-        return max_ratio * 100
+        return max_difference / cax_value * 100
+    
+class SymmetryCalculationByLocalPointDifference(ProfileMetric):
+    name = "Symmetry Calculation by Local Point Difference"
+    unit = ""
+
+    def __init__(self, color="g", linestyle="-."):
+        super().__init__(color=color, linestyle=linestyle)
+
+    def calculate(self) -> float:
+        raise NotImplementedError("This metric does not make sense for computer generated EPIDs and is not implemented.")
+
 
 def run_analysis_on_path(dcm_path) -> str:
     try:
@@ -258,7 +284,8 @@ def run_analysis_on_path(dcm_path) -> str:
                 FlatnessCalculationByRatio(), 
                 FlatnessCalculationByCaxVariance(),
                 FlatnessCalculationByCaxRatio(),
-                SymmetryCalculationByCAXPointDifference
+                SymmetryCalculationByCAXPointDifference(),
+                SymmetryCalculationByPointRatio(),
             ),
         )
         return analysis.results()
@@ -274,20 +301,22 @@ field_analyzer.analyze(
     # x_width=0.02,
     # y_width=0.02,
     normalization=Normalization.BEAM_CENTER,
-    #edge_type=Edge.FWHM,
+    edge_type=Edge.FWHM,
     ground=True,
     metrics=(
         PenumbraLeftMetric(),
         PenumbraRightMetric(),
         SymmetryAreaMetric(),
         FlatnessDifferenceMetric(),
+        SymmetryPointDifferenceMetric(),
         FlatnessCalculationByVariance(),
         FlatnessRatioMetric(),
         FlatnessCalculationByRatio(), 
         FlatnessCalculationByCaxVariance(),
         FlatnessCalculationByCaxRatio(),
-        SymmetryCalculationByCAXPointDifference()
+        SymmetryCalculationByCAXPointDifference(),
+        SymmetryCalculationByCAXPointDifference(),
+        SymmetryCalculationByPointRatio(),
     ),
 )
 print(field_analyzer.results())
-field_analyzer.plot_analyzed_images()
