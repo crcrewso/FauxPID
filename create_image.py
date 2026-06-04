@@ -22,10 +22,10 @@ def generate_dicom(file_out_name, layers):
     for layer in layers:
         as1200.add_layer(layer)
     as1200.generate_dicom(file_out_name=file_out_name, gantry_angle=0)
+    plt.imsave(file_out_name.with_suffix('.png'), as1200.image)
     return as1200.image
 
 
-# In[4]:
 
 def generate_flatness_images(dir_path):
     dir_path = dir_path / "Flatness"
@@ -40,6 +40,7 @@ def generate_flatness_images(dir_path):
     ]
     file_path = dir_path / "flatness_perfect_10x10.dcm"
     as1200 = generate_dicom(file_path, perfect_open_field_layers)
+    
 
     field_layers = [
     layers.FilteredFieldLayer(
