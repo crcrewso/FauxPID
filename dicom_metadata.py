@@ -1,6 +1,5 @@
 import pydicom as dicom
-import datetime
-from datetime import timezone
+from datetime import datetime, timezone
 import numpy as np
 
 def add_metadata(file_name, leaf_jaw_positions=[-50.0, 50.0], gantry_angle=0.0):
@@ -53,5 +52,4 @@ def add_metadata(file_name, leaf_jaw_positions=[-50.0, 50.0], gantry_angle=0.0):
     ds.ExposureSequence = dicom.Sequence([exposure_dataset])
     ds.IsocenterPosition = [0.0, 0.0, 0.0]
 
-    print(ds)
     ds.save_as(file_name)
