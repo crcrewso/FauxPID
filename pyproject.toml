@@ -1,0 +1,7 @@
+[project]
+name = "linac-dicom-image-suite"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []

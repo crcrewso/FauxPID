@@ -114,3 +114,17 @@ def generate_flatness_images(dir_path):
     file_path = dir_path / "flatness_imperfect_fff_10x10.dcm"
     as1200 = generate_dicom(file_path, field_layers)
 
+def generate_artifact_images(dir_path):
+    dir_path = dir_path / "Artifacts"
+    dir_path.mkdir(parents=True, exist_ok=True)
+
+    field_layers = [
+        layers.FilterFreeFieldLayer(
+        field_size_mm=(100, 100), 
+        alpha=1.0, 
+        cax_offset_mm=(0, 0)), 
+        layers.GaussianFilterLayer()
+        ]
+
+    file_path = dir_path / "artifact_imperfect_fff_10x10.dcm"
+    as1200 = generate_dicom(file_path, field_layers)
