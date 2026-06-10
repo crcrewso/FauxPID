@@ -1,8 +1,30 @@
-import pydicom as dicom
 from datetime import datetime, timezone
-import numpy as np
+from pathlib import Path
+import tomllib
+
+import pydicom as dicom
+
+#TODO: May break when converting to EXE, maybe turn the version into a static constant
+def _load_software_version() -> str:
+    """
+    Gets the software version from the pyproject.toml file. If the file is not found or the version is not specified, returns "0.0.0".
+    """
+    pyproject_path = Path(__file__).with_name("pyproject.toml")
+    try:
+        with pyproject_path.open("rb") as pyproject_file:
+            project_data = tomllib.load(pyproject_file)
+        return project_data["project"]["version"]
+    except (FileNotFoundError, KeyError, tomllib.TOMLDecodeError):
+        return "0.0.0"
+
+
+PROJECT_VERSION = _load_software_version()
+
 
 def add_metadata(file_name, leaf_jaw_positions=[-50.0, 50.0], gantry_angle=0.0):
+    """
+    Adds metadata to the DICOM file specified by file_name. 
+    """
     ds = dicom.dcmread(file_name)
     epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)
     
@@ -18,8 +40,7 @@ def add_metadata(file_name, leaf_jaw_positions=[-50.0, 50.0], gantry_angle=0.0):
     ds.PatientBirthDate = epoch.strftime('%Y%m%d')
     ds.PatientBirthTime = epoch.strftime('%H%M%S')
 
-    #TODO: Setup a way to dynamically pull software version
-    ds.SoftwareVersions = '1.0'
+    ds.SoftwareVersions = PROJECT_VERSION
 
     ds.PixelRepresentation = 0
     ds.PixelIntensityRelationship = 'LIN'

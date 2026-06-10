@@ -10,6 +10,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog
 import threading
 from pathlib import Path
+import tomllib
 from dicom_analysis import analyze_all
 from create_image import generate_artifacts_images, generate_flatness_images
 
@@ -35,10 +36,23 @@ DISPLAY_OPTIONS = [
 # ─────────────────────────────────────────────────────────────────────────────
 
 
+def _load_project_version() -> str:
+    pyproject_path = Path(__file__).with_name("pyproject.toml")
+    try:
+        with pyproject_path.open("rb") as pyproject_file:
+            project_data = tomllib.load(pyproject_file)
+        return project_data["project"]["version"]
+    except (FileNotFoundError, KeyError, tomllib.TOMLDecodeError):
+        return "0.0.0"
+
+
+PROJECT_VERSION = _load_project_version()
+
+
 class AnalysisGUI(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("DICOM Image Generator")
+        self.title(f"DICOM Image Generator v{PROJECT_VERSION}")
         self.resizable(False, False)
         self.configure(bg="#e0e0f0")
 
@@ -134,7 +148,11 @@ class AnalysisGUI(tk.Tk):
         outer.pack(fill="both", expand=True)
 
         # Title
-        ttk.Label(outer, text="DICOM Image Generator", style="Header.TLabel").pack(
+        ttk.Label(
+            outer,
+            text=f"DICOM Image Generator v{PROJECT_VERSION}",
+            style="Header.TLabel",
+        ).pack(
             anchor="w", pady=(0, 16)
         )
 

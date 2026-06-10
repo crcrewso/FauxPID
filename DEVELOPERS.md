@@ -36,6 +36,13 @@ The checkbox labels shown in the GUI come from these lists in `analysis_gui.py`:
 
 To add or remove options, update those lists and then wire the new option into `run_analysis(...)`.
 
-## Notes
+## Customizing Analysis
 
-`dicom_analysis.py` expects generated `.dcm` files to exist under the output image tree and mirrors the folder structure when writing analysis text files.
+To add/edit algorithms, all metrics live in `metrics.py`. Using the same framework, create a new class for your algorithm and implement a `calculate()` function. 
+
+## Customizing Images
+
+All images are generated using pylinac's Image Generator. This all lives in `create_image.py`. You can use the `generate_dicom_using_layers()` function and specify the layers or for more complex images, you can do it yourself (see the artifacts images). 
+
+## Notes
+tbc
