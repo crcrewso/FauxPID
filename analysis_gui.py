@@ -12,7 +12,7 @@ import threading
 from pathlib import Path
 import tomllib
 from dicom_analysis import analyze_all
-from create_image import generate_artifacts_images, generate_flatness_images
+from create_image import ImageGenerator
 
 
 # ── Customize your options here ──────────────────────────────────────────────
@@ -308,12 +308,11 @@ def run_analysis(output_dir, image_type_options, display_options, status_callbac
     status_callback("Folder setting up")
     output_gen_dir = Path(output_dir) / "DICOM_GENERATION_OUTPUT"
     images_dir = output_gen_dir / "IMAGES"
-
+    image_generator = ImageGenerator(file_out_directory=images_dir)
     if "Artifacts" in image_type_options:
-        generate_artifacts_images(dir_path=images_dir)
+        image_generator.generate_artifacts_images()
     if "Flatness" in image_type_options:
-        generate_flatness_images(dir_path=images_dir)
-    
+        image_generator.generate_flatness_images()
 
     # for image_type in image_type_options:
     #     status_callback(f"Generating {image_type} images…")
