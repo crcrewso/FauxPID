@@ -49,7 +49,7 @@ def get_field_indices(values: np.ndarray, fwxm_ratio: float = 0.5) -> tuple[int,
     """
     Finds the indices of the left and right field edges in the profile default calculating using Full Width Half Max (FWHM). 
     If the CAX is not between the left and right field edges, then the half max value is calculated using the max value over the whole profile. 
-    Where the edges of a region are in between indexes, the indexes closer to the beam center are used.
+    Where the edges of a region are in between indices, the indices closer to the beam center are used.
     """
     max_value = np.max(values)
     fwxm_max = max_value * fwxm_ratio
@@ -67,7 +67,7 @@ class FieldsizeCalculationByFWHM(ProfileMetric):
     This metric calculates the field size of a profile by finding the full width at half maximum (FWHM) of the profile. 
     The FWHM is calculated by finding the indices of the left and right transitions in the profile, where the values cross half of the maximum value. 
     The field size is then calculated by taking the difference between the right and left transition indices and multiplying by the distance per pixel in mm. 
-    Where the edges of a region are in between indexes, the indexes closer to the center are used.
+    Where the edges of a region are in between indices, the indices closer to the center are used.
     """
     name = "Field Size Calculation by FWHM"
     unit = "mm"
@@ -85,7 +85,7 @@ class FlatnessCalculationByVariance(ProfileMetric):
     80% of the field region calculated using Full Width Half Max (FWHM) and finding (max-min)/(max+min). 
     This assumes each pixel in the profile corresponds to a consistent length in mm, 
     which may not always be the case.
-    Where the edges of a region are in between indexes, the indexes closer to the center are used. 
+    Where the edges of a region are in between indices, the indices closer to the center are used. 
     """
     name = "Flatness Calculation by Variance"
     unit = "%"
@@ -96,10 +96,8 @@ class FlatnessCalculationByVariance(ProfileMetric):
 
     def calculate(self) -> float:
         values = self.profile.values
-        cax_value = get_cax_value(values)
-        fifty_percent_value = cax_value * 0.5
         cax_index = self.profile.cax_index
-        left_field_index, right_field_index = get_transition_indices(values, fifty_percent_value)
+        left_field_index, right_field_index = get_field_indices(values)
         if left_field_index > cax_index or right_field_index < cax_index:
             raise ValueError("CAX index is not between the left and right field indices.")
 
@@ -117,7 +115,7 @@ class FlatnessCalculationByRatio(ProfileMetric):
     This metric calculates the flatness ratio of a profile based on the IEC Standard 976. 
     The region of interest (ROI) is dependent on the field size, which is determined by FWHM. 
     The ratio is then the max/min within the ROI. 
-    Where the edges of a region are in between indexes, the indexes closer to the center are used.
+    Where the edges of a region are in between indices, the indices closer to the center are used.
     """
     name = "Flatness Calculation by Ratio (IEC)"
     unit = "%"
@@ -127,11 +125,9 @@ class FlatnessCalculationByRatio(ProfileMetric):
 
     def calculate(self) -> float:
         
-        values = self.profile.values 
-        cax_value = get_cax_value(values)
-        fifty_percent_value = cax_value * 0.5
+        values = self.profile.values
         cax_index = self.profile.cax_index
-        left_field_index, right_field_index = get_transition_indices(values, fifty_percent_value)
+        left_field_index, right_field_index = get_field_indices(values)
         if left_field_index > cax_index or right_field_index < cax_index:
             raise ValueError("CAX index is not between the left and right field indices.")
 
@@ -161,7 +157,7 @@ class FlatnessCalculationByCaxVariance(ProfileMetric):
     """
     This metric calculates the flatness of a profile by finding 
     (max-min)/CAX value within the field found by FWHM. 
-    Where the edges of a region are in between indexes, the indexes closer to the center are used.
+    Where the edges of a region are in between indices, the indices closer to the center are used.
     """
     name = "Flatness Calculation by CAX Variance"
     unit = ""
@@ -173,9 +169,8 @@ class FlatnessCalculationByCaxVariance(ProfileMetric):
         
         values = self.profile.values
         cax_value = get_cax_value(values)
-        fifty_percent_value = cax_value * 0.5
         cax_index = self.profile.cax_index
-        left_field_index, right_field_index = get_transition_indices(values, fifty_percent_value)
+        left_field_index, right_field_index = get_field_indices(values)
         if left_field_index > cax_index or right_field_index < cax_index:
             raise ValueError("CAX index is not between the left and right field indices.")
 
@@ -191,7 +186,7 @@ class FlatnessCalculationByCaxRatio(ProfileMetric):
     """
     This metric calculates the flatness of a profile by finding 
     max/CAX value within 90% of the field found by FWHM. 
-    Where the edges of a region are in between indexes, the indexes closer to the center are used.
+    Where the edges of a region are in between indices, the indices closer to the center are used.
     """
     name = "Flatness Calculation by CAX Ratio"
     unit = ""
@@ -202,9 +197,8 @@ class FlatnessCalculationByCaxRatio(ProfileMetric):
     def calculate(self) -> float:
         values = self.profile.values
         cax_value = get_cax_value(values)
-        fifty_percent_value = cax_value * 0.5
         cax_index = self.profile.cax_index
-        left_field_index, right_field_index = get_transition_indices(values, fifty_percent_value)
+        left_field_index, right_field_index = get_field_indices(values, )
         if left_field_index > cax_index or right_field_index < cax_index:
             raise ValueError("CAX index is not between the left and right field indices.")
 
@@ -219,7 +213,7 @@ class SymmetryCalculationByCAXPointDifference(ProfileMetric):
     """
     This metric calculates the symmetry of a profile by finding 
     the maximum difference between symmetric points with respect to the CAX. 
-    Where the edges of a region are in between indexes, the indexes closer to the center are used.
+    Where the edges of a region are in between indices, the indices closer to the center are used.
     """
     name = "Symmetry Calculation by CAX Point Difference"
     unit = "%"
@@ -230,9 +224,8 @@ class SymmetryCalculationByCAXPointDifference(ProfileMetric):
     def calculate(self) -> float:
         values = self.profile.values
         cax_value = get_cax_value(values)
-        fifty_percent_value = cax_value * 0.5
         cax_index = self.profile.cax_index
-        left_field_index, right_field_index = get_transition_indices(values, fifty_percent_value)
+        left_field_index, right_field_index = get_field_indices(values)
         if left_field_index > cax_index or right_field_index < cax_index:
             raise ValueError("CAX index is not between the left and right field indices.")
 
@@ -256,9 +249,9 @@ class SymmetryCalculationByPointRatio(ProfileMetric):
     """
     This metric calculates the symmetry point ratio of a profile based on the IEC Standard 976.  
     The field size is determined using FWHM and the ROI from the length of the field. 
-    The ratio is calculated by finding the maximum ratio between symmetric points with respect to the CAX. 
+    The ratio is calculated by finding the maximum ratio between symmetric points with respect to the beam centre. 
     This assumes each pixel in the profile corresponds to a consistent length in mm, which may not always be the case.
-    Where the edges of a region are in between indexes, the indexes closer to the center are used.
+    Where the edges of a region are in between indices, the indices closer to the center are used.
     """
     name = "Symmetry Calculation by Point Ratio (IEC 976)"
     unit = "%"
@@ -268,42 +261,46 @@ class SymmetryCalculationByPointRatio(ProfileMetric):
 
     def calculate(self) -> float:
         values = self.profile.values
-        cax_value = get_cax_value(values)
-        fifty_percent_value = cax_value * 0.5
-        cax_index = self.profile.cax_index
-        left_field_index, right_field_index = get_transition_indices(values, fifty_percent_value)
-        if left_field_index > cax_index or right_field_index < cax_index:
-            raise ValueError("CAX index is not between the left and right field indices.")
+        left_field_index, right_field_index = get_field_indices(values)
+        beam_centre_index = (left_field_index + right_field_index) / 2
 
-        left_length_mm = (cax_index - left_field_index) / self.profile.dpmm
-        right_length_mm = (right_field_index - cax_index) / self.profile.dpmm
+        left_length_mm = (beam_centre_index - left_field_index) / self.profile.dpmm
+        right_length_mm = (right_field_index - beam_centre_index) / self.profile.dpmm
 
         if left_length_mm < 100:
-            left_roi_index = math.ceil(cax_index - (left_length_mm - 20) * self.profile.dpmm)  # Round towards center
+            left_roi_index = math.ceil(beam_centre_index - (left_length_mm - 20) * self.profile.dpmm)  # Round towards center
         elif left_length_mm < 300:
-            left_roi_index = math.ceil(cax_index - (left_length_mm * 0.8) * self.profile.dpmm)
+            left_roi_index = math.ceil(beam_centre_index - (left_length_mm * 0.8) * self.profile.dpmm)
         else:
-            left_roi_index = math.ceil(cax_index - (left_length_mm - 60) * self.profile.dpmm)
+            left_roi_index = math.ceil(beam_centre_index - (left_length_mm - 60) * self.profile.dpmm)
 
         if right_length_mm < 100:
-            right_roi_index = math.floor(cax_index + (right_length_mm - 20) * self.profile.dpmm)  # Round towards center
+            right_roi_index = math.floor(beam_centre_index + (right_length_mm - 20) * self.profile.dpmm)  # Round towards center
         elif right_length_mm < 300:
-            right_roi_index = math.floor(cax_index + (right_length_mm * 0.8) * self.profile.dpmm)
+            right_roi_index = math.floor(beam_centre_index + (right_length_mm * 0.8) * self.profile.dpmm)
         else:
-            right_roi_index = math.floor(cax_index + (right_length_mm - 60) * self.profile.dpmm)
+            right_roi_index = math.floor(beam_centre_index + (right_length_mm - 60) * self.profile.dpmm)
 
-        left_index = math.floor(self.profile.cax_index)
-        right_index = math.ceil(self.profile.cax_index)
+        left_index = math.floor(beam_centre_index)
+        right_index = math.ceil(beam_centre_index)
 
         max_difference = 0
+        max_right_value = 1
+        max_left_value = 1
         while left_index >= left_roi_index and right_index <= right_roi_index:
-            difference = abs(values[left_index] - values[right_index])
-            if difference > max_difference:
+            difference = values[right_index] - values[left_index]
+            if abs(difference) > abs(max_difference):
                 max_difference = difference
+                max_right_value = values[right_index]
+                max_left_value = values[left_index]
             left_index -= 1
             right_index += 1
 
-        return max_difference / cax_value * 100
+        if max_difference > 0:
+            return max_right_value / max_left_value * 100
+        else:
+            return max_left_value / max_right_value * 100
+        
     
 class SymmetryCalculationByLocalPointDifference(ProfileMetric):
     name = "Symmetry Calculation by Local Point Difference"
@@ -319,44 +316,36 @@ class SymmetryCalculationByArea(ProfileMetric):
     """
     This metric calculates the symmetry of a profile by finding the area under the curve on either side of the CAX within a specified region of interest (ROI) and finding the difference divided by the sum. 
     The area is approximated using trapezoidal integration. 
-    Where the edges of a region are in between indexes, the indexes closer to the center are used.
+    Where the edges of a region are in between indices, the indices closer to the center are used.
     """
     name = "Symmetry Calculation by Area"
     unit = ""
 
     def __init__(self, in_field_ratio: float = 0.8, color="g", linestyle="-."):
-        self.in_field_ratio = in_field_ratio
         super().__init__(color=color, linestyle=linestyle)
+        self.in_field_ratio = in_field_ratio
 
     def calculate(self) -> float:
         values = self.profile.values
-        cax_value = get_cax_value(values)
-        fifty_percent_value = cax_value * 0.5
-        cax_index = self.profile.cax_index
-        left_field_index, right_field_index = get_transition_indices(values, fifty_percent_value)
-        if left_field_index > cax_index or right_field_index < cax_index:
-            raise ValueError("CAX index is not between the left and right field indices.")
-        
-        print(left_field_index, right_field_index, cax_index)
+        left_field_index, right_field_index = get_field_indices(values)
+        beam_centre_index = (left_field_index + right_field_index) / 2
 
-        left_roi_index = math.ceil(cax_index - (cax_index - left_field_index) * self.in_field_ratio)  # Round towards center
-        right_roi_index = math.floor(cax_index + (right_field_index - cax_index) * self.in_field_ratio)  # Round towards center
+        left_roi_index = math.ceil(beam_centre_index - (beam_centre_index - left_field_index) * self.in_field_ratio)  # Round towards center
+        right_roi_index = math.floor(beam_centre_index + (right_field_index - beam_centre_index) * self.in_field_ratio)  # Round towards center
 
-        left_index = math.floor(self.profile.cax_index)
-        right_index = math.ceil(self.profile.cax_index)
+        left_index = math.floor(beam_centre_index)
+        right_index = math.ceil(beam_centre_index)
 
         left_area_sum = 0
         right_area_sum = 0
-        while left_index >= left_roi_index - 2 and right_index <= right_roi_index + 2 :
-            left_area_sum += values[left_index] 
-            #+ (values[left_index - 1] - values[left_index]) / 2 
-            right_area_sum += values[right_index] 
-            #+ (values[right_index + 1] - values[right_index]) / 2
+        while left_index >= left_roi_index and right_index <= right_roi_index :
+            left_area_sum += values[left_index] + (values[left_index - 1] - values[left_index]) / 2 
+            right_area_sum += values[right_index] + (values[right_index + 1] - values[right_index]) / 2
             left_index -= 1
             right_index += 1
         print("MINE:", left_area_sum, right_area_sum, left_roi_index, right_roi_index)
-        print(left_index, right_index)
-        return (right_area_sum - left_area_sum) / (right_area_sum + left_area_sum) * 100
+        print(left_index, right_index, beam_centre_index)
+        return (right_area_sum - left_area_sum) / (right_area_sum + left_area_sum) * 200
 
 #del later
 class SymmetryAreaMetric2(ProfileMetric):
@@ -413,7 +402,7 @@ def run_analysis_on_path(dcm_path) -> str:
 
 ## TESTING DELETE LATER
 path = 'Solstice-m12_d18_2025-FS_EPID_MLC 10x38.dcm'
-path = 'Test\perfect_blur_10x10.dcm'
+#path = 'Test/perfect_blur_10x10.dcm'
 # field_analyzer = FieldProfileAnalysis(path)
 # field_analyzer.analyze(
 #     centering=Centering.BEAM_CENTER,
