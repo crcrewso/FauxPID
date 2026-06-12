@@ -15,6 +15,10 @@ The app will create the DICOM images and run the analysis automatically.
 
 The selected output directory will contain a `DICOM_GENERATION_OUTPUT` folder with generated images and analysis results.
 
+## Analysis algorithms
+
+For more on the specifics of each algorithm, read [ALGORITHMS.md](ALGORITHMS.md)
+
 ## For Developers
 
 If you want to understand how the app works internally, read [DEVELOPERS.md](DEVELOPERS.md).
