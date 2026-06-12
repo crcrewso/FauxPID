@@ -91,8 +91,8 @@ class FlatnessCalculationByVariance(ProfileMetric):
     unit = "%"
 
     def __init__(self, in_field_ratio: float = 0.8, color="g", linestyle="-."):
-        self.in_field_ratio = in_field_ratio
         super().__init__(color=color, linestyle=linestyle)
+        self.in_field_ratio = in_field_ratio
 
     def calculate(self) -> float:
         values = self.profile.values
@@ -232,8 +232,8 @@ class SymmetryCalculationByCAXPointDifference(ProfileMetric):
         left_roi_index = math.ceil(cax_index - (cax_index - left_field_index) * 0.8)  # Round towards center
         right_roi_index = math.floor(cax_index + (right_field_index - cax_index) * 0.8)  # Round towards center
 
-        left_index = math.floor(self.profile.cax_index)
-        right_index = math.ceil(self.profile.cax_index)
+        left_index = math.floor(cax_index)
+        right_index = math.ceil(cax_index)
 
         max_difference = 0
         while left_index >= left_roi_index and right_index <= right_roi_index:
@@ -343,56 +343,29 @@ class SymmetryCalculationByArea(ProfileMetric):
             right_area_sum += values[right_index] + (values[right_index + 1] - values[right_index]) / 2
             left_index -= 1
             right_index += 1
-        print("MINE:", left_area_sum, right_area_sum, left_roi_index, right_roi_index)
-        print(left_index, right_index, beam_centre_index)
         return (right_area_sum - left_area_sum) / (right_area_sum + left_area_sum) * 200
-
-#del later
-class SymmetryAreaMetric2(ProfileMetric):
-    """The symmetry using ratios of the areas of the left and right sides of the profile."""
-
-    name = "Symmetry (Area)"
-
-    def __init__(
-        self,
-        in_field_ratio: float = 0.8,
-    ):
-        self.in_field_ratio = in_field_ratio
-
-    def calculate(self) -> float:
-        """Calculate the symmetry ratio of the profile using the area of the left side vs the right side."""
-        l, r, width = self.profile.field_indices(in_field_ratio=self.in_field_ratio)
-        area_left = np.sum(
-            self.profile.field_values(self.in_field_ratio)[: math.floor(width / 2) + 1]
-        )
-        area_right = np.sum(
-            self.profile.field_values(self.in_field_ratio)[math.ceil(width / 2) :]
-        )
-        print(self.profile.field_values(self.in_field_ratio))
-        print(self.profile.field_values(self.in_field_ratio).size)
-        print(width)
-        print("NOT MINE: ", area_left, area_right, l, r, width)
-        return 100 * (area_left - area_right) / (area_left + area_right)
-
 
 def run_analysis_on_path(dcm_path) -> str:
     try:
         analysis = FieldProfileAnalysis(str(dcm_path))
         analysis.analyze(
             centering=Centering.BEAM_CENTER,
+            #centering=Centering.GEOMETRIC_CENTER,
             normalization=Normalization.NONE,
             edge_type=Edge.FWHM,
             ground=True,
             metrics=(
+                SymmetryPointDifferenceMetric(), 
+
                 FieldsizeCalculationByFWHM(),
                 FlatnessCalculationByVariance(),
                 FlatnessCalculationByRatio(), 
                 FlatnessCalculationByCaxVariance(),
-                FlatnessCalculationByCaxRatio(), #Diff from pylinac check later
-                SymmetryCalculationByCAXPointDifference(), # TODO: CHange symmetry calcs to be built around beam centre not CAX
+                FlatnessCalculationByCaxRatio(), 
+                
+                SymmetryCalculationByCAXPointDifference(),
                 SymmetryCalculationByPointRatio(),
-                SymmetryAreaMetric2(),
-                SymmetryCalculationByArea(), #checking now
+                SymmetryCalculationByArea(),
             ),
         )
         return analysis.results()
@@ -401,7 +374,8 @@ def run_analysis_on_path(dcm_path) -> str:
 
 
 ## TESTING DELETE LATER
-path = 'Solstice-m12_d18_2025-FS_EPID_MLC 10x38.dcm'
+#path = 'Solstice-m12_d18_2025-FS_EPID_MLC 10x38.dcm'
+path = 'Solstice-m12_d18_2025-FS_EPID_Jaw 10x10.dcm'
 #path = 'Test/perfect_blur_10x10.dcm'
 # field_analyzer = FieldProfileAnalysis(path)
 # field_analyzer.analyze(
