@@ -109,7 +109,7 @@ class ImageGenerator:
         plt.imsave(file_path.with_suffix('.png'), simulator_instance.image)
 
 
-    def generate_flatness_images(dir_path):
+    def generate_flatness_images(self, dir_path):
         dir_path = dir_path / "Flatness"
         dir_path.mkdir(parents=True, exist_ok=True)
 
@@ -121,7 +121,7 @@ class ImageGenerator:
         layers.GaussianFilterLayer()
         ]
         file_path = dir_path / "flatness_perfect_10x10.dcm"
-        simulator_instance = generate_dicom_using_layers(file_path, perfect_open_field_layers)
+        simulator_instance = self.generate_dicom_using_layers(file_path, perfect_open_field_layers)
         
 
         field_layers = [
@@ -146,7 +146,7 @@ class ImageGenerator:
         layers.GaussianFilterLayer()
         ]
         file_path = dir_path / "flatness_filtered_10x10.dcm"
-        simulator_instance = generate_dicom_using_layers(file_path, field_layers)
+        simulator_instance = self.generate_dicom_using_layers(file_path, field_layers)
 
         field_layers = [
         layers.FilteredFieldLayer(
@@ -170,7 +170,7 @@ class ImageGenerator:
         layers.GaussianFilterLayer()
         ]
         file_path = dir_path / "flatness_two_percent_IEC_ratio_10x10.dcm"
-        simulator_instance = generate_dicom_using_layers(file_path, field_layers)
+        simulator_instance = self.generate_dicom_using_layers(file_path, field_layers)
 
         field_layers = [
         layers.FilteredFieldLayer(
@@ -182,7 +182,7 @@ class ImageGenerator:
         layers.GaussianFilterLayer()
         ]
         file_path = dir_path / "flatness_two_percent_CAX_ratio_10x10.dcm"
-        simulator_instance = generate_dicom_using_layers(file_path, field_layers)
+        simulator_instance = self.generate_dicom_using_layers(file_path, field_layers)
 
 
         field_layers = [
@@ -194,5 +194,34 @@ class ImageGenerator:
             ]
 
         file_path = dir_path / "flatness_imperfect_fff_10x10.dcm"
-        simulator_instance = generate_dicom_using_layers(file_path, field_layers)
+        simulator_instance = self.generate_dicom_using_layers(file_path, field_layers)
+    
+    def generate_symmetry_images(self, dir_path):
+        dir_path = dir_path / "Symmetry"
+        dir_path.mkdir(parents=True, exist_ok=True)
+
+        perfect_open_field_layers = [
+        layers.PerfectFieldLayer(
+        field_size_mm=(100, 100), 
+        alpha=1.0, 
+        cax_offset_mm=(0, 0)), 
+        layers.GaussianFilterLayer()
+        ]
+        file_path = dir_path / "symmetry_perfect_10x10.dcm"
+        simulator_instance = self.generate_dicom_using_layers(file_path, perfect_open_field_layers)
+
+        field_layers = [
+        layers.FilteredFieldLayer(
+            field_size_mm=(100, 100),
+            alpha=0.9,
+        ),
+        layers.SlopeLayer(
+            slope_x=0.02,
+            slope_y=0.0
+        ),
+        layers.GaussianFilterLayer()
+        ]
+        file_path = dir_path / "symmetry_x_sloped_10x10.dcm"
+        simulator_instance = self.generate_dicom_using_layers(file_path, field_layers)
+
 

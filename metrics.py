@@ -79,6 +79,7 @@ class FieldsizeCalculationByFWHM(ProfileMetric):
         left_index, right_index = get_field_indices(self.profile.values)
         return (right_index - left_index + 1) / self.profile.dpmm
 
+### FLATNESS METRICS ###
 class FlatnessCalculationByVariance(ProfileMetric):
     """
     This metric calculates the flatness of a profile by taking 
@@ -209,6 +210,7 @@ class FlatnessCalculationByCaxRatio(ProfileMetric):
             / cax_value
         )
     
+### SYMMETRY METRICS ###
 class SymmetryCalculationByCAXPointDifference(ProfileMetric):
     """
     This metric calculates the symmetry of a profile by finding 
@@ -242,9 +244,48 @@ class SymmetryCalculationByCAXPointDifference(ProfileMetric):
                 max_difference = difference
             left_index -= 1
             right_index += 1
-
+        print("ne", cax_value, max_difference)
         return max_difference / cax_value * 100
-    
+
+#testing del later
+class SymmetryPointDifferenceMetric2(ProfileMetric):
+    """Symmetry using the point difference method."""
+
+    unit = "%"
+    name = "Point Difference Symmetry"
+
+    def __init__(
+        self,
+        in_field_ratio: float = 0.8,
+        color="magenta",
+        linestyle="--",
+        max_sym_range: float = 2,
+        min_sym_range: float = -2,
+    ):
+        self.in_field_ratio = in_field_ratio
+        self.max_sym = max_sym_range
+        self.min_sym = min_sym_range
+        super().__init__(color=color, linestyle=linestyle)
+
+    @staticmethod
+    def _calc_point(lt: float, rt: float, cax: float) -> float:
+        return 100 * (lt - rt) / cax
+
+    @property
+    def symmetry_values(self) -> list[float]:
+        field_values = self.profile.field_values(in_field_ratio=self.in_field_ratio)
+        cax_value = self.profile.y_at_x(self.profile.center_idx)
+        print(cax_value)
+        return [
+            self._calc_point(lt, rt, cax_value)
+            for lt, rt in zip(field_values, field_values[::-1])
+        ]
+
+    def calculate(self) -> float:
+        """Calculate the symmetry ratio of the profile."""
+        max_sym_idx = np.argmax(np.abs(self.symmetry_values))
+        return self.symmetry_values[max_sym_idx]
+        
 class SymmetryCalculationByPointRatio(ProfileMetric):
     """
     This metric calculates the symmetry point ratio of a profile based on the IEC Standard 976.  
@@ -355,14 +396,15 @@ def run_analysis_on_path(dcm_path) -> str:
             edge_type=Edge.FWHM,
             ground=True,
             metrics=(
-                SymmetryPointDifferenceMetric(), 
+                
 
                 FieldsizeCalculationByFWHM(),
                 FlatnessCalculationByVariance(),
                 FlatnessCalculationByRatio(), 
                 FlatnessCalculationByCaxVariance(),
                 FlatnessCalculationByCaxRatio(), 
-                
+
+                SymmetryPointDifferenceMetric2(), 
                 SymmetryCalculationByCAXPointDifference(),
                 SymmetryCalculationByPointRatio(),
                 SymmetryCalculationByArea(),
