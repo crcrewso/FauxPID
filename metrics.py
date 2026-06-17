@@ -215,6 +215,7 @@ class SymmetryCalculationByCAXPointDifference(ProfileMetric):
     """
     This metric calculates the symmetry of a profile by finding 
     the maximum difference between symmetric points with respect to the CAX. 
+    Negative values indicate the right side is higher and positive values indicate the left side is higher.
     Where the edges of a region are in between indices, the indices closer to the center are used.
     """
     name = "Symmetry Calculation by CAX Point Difference"
@@ -239,52 +240,12 @@ class SymmetryCalculationByCAXPointDifference(ProfileMetric):
 
         max_difference = 0
         while left_index >= left_roi_index and right_index <= right_roi_index:
-            difference = abs(values[left_index] - values[right_index])
-            if difference > max_difference:
+            difference = (values[left_index] - values[right_index])
+            if abs(difference) > abs(max_difference):
                 max_difference = difference
             left_index -= 1
             right_index += 1
-        print("ne", cax_value, max_difference)
         return max_difference / cax_value * 100
-
-#testing del later
-class SymmetryPointDifferenceMetric2(ProfileMetric):
-    """Symmetry using the point difference method."""
-
-    unit = "%"
-    name = "Point Difference Symmetry"
-
-    def __init__(
-        self,
-        in_field_ratio: float = 0.8,
-        color="magenta",
-        linestyle="--",
-        max_sym_range: float = 2,
-        min_sym_range: float = -2,
-    ):
-        self.in_field_ratio = in_field_ratio
-        self.max_sym = max_sym_range
-        self.min_sym = min_sym_range
-        super().__init__(color=color, linestyle=linestyle)
-
-    @staticmethod
-    def _calc_point(lt: float, rt: float, cax: float) -> float:
-        return 100 * (lt - rt) / cax
-
-    @property
-    def symmetry_values(self) -> list[float]:
-        field_values = self.profile.field_values(in_field_ratio=self.in_field_ratio)
-        cax_value = self.profile.y_at_x(self.profile.center_idx)
-        print(cax_value)
-        return [
-            self._calc_point(lt, rt, cax_value)
-            for lt, rt in zip(field_values, field_values[::-1])
-        ]
-
-    def calculate(self) -> float:
-        """Calculate the symmetry ratio of the profile."""
-        max_sym_idx = np.argmax(np.abs(self.symmetry_values))
-        return self.symmetry_values[max_sym_idx]
         
 class SymmetryCalculationByPointRatio(ProfileMetric):
     """
@@ -356,11 +317,11 @@ class SymmetryCalculationByLocalPointDifference(ProfileMetric):
 class SymmetryCalculationByArea(ProfileMetric):
     """
     This metric calculates the symmetry of a profile by finding the area under the curve on either side of the CAX within a specified region of interest (ROI) and finding the difference divided by the sum. 
-    The area is approximated using trapezoidal integration. 
+    The area is approximated using trapezoidal integration. If the value is negative, it indicates the left side is higher. 
     Where the edges of a region are in between indices, the indices closer to the center are used.
     """
     name = "Symmetry Calculation by Area"
-    unit = ""
+    unit = "%"
 
     def __init__(self, in_field_ratio: float = 0.8, color="g", linestyle="-."):
         super().__init__(color=color, linestyle=linestyle)
@@ -404,7 +365,6 @@ def run_analysis_on_path(dcm_path) -> str:
                 FlatnessCalculationByCaxVariance(),
                 FlatnessCalculationByCaxRatio(), 
 
-                SymmetryPointDifferenceMetric2(), 
                 SymmetryCalculationByCAXPointDifference(),
                 SymmetryCalculationByPointRatio(),
                 SymmetryCalculationByArea(),
@@ -417,8 +377,8 @@ def run_analysis_on_path(dcm_path) -> str:
 
 ## TESTING DELETE LATER
 #path = 'Solstice-m12_d18_2025-FS_EPID_MLC 10x38.dcm'
-path = 'Solstice-m12_d18_2025-FS_EPID_Jaw 10x10.dcm'
-#path = 'Test/perfect_blur_10x10.dcm'
+# path = 'Solstice-m12_d18_2025-FS_EPID_Jaw 10x10.dcm'
+path = 'Test/symmetry_x_sloped_10x10.dcm'
 # field_analyzer = FieldProfileAnalysis(path)
 # field_analyzer.analyze(
 #     centering=Centering.BEAM_CENTER,

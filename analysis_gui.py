@@ -19,8 +19,8 @@ from create_image import ImageGenerator
 
 IMAGE_TYPE_OPTIONS = [
     "Artifacts",
-    "Flatness",
     "Field Size",
+    "Flatness",
     "Symmetry",
     "Orthogonality",
     "CAX Offset",
@@ -272,8 +272,8 @@ class AnalysisGUI(tk.Tk):
                     status_callback=self._set_status,
                 )
                 self.after(0, lambda: self._set_status("✔  Done!"))
-            except Exception as exc:
-                self.after(0, lambda: self._set_status(f"✖  Error: {exc}", error=True))
+            except Exception as e:
+                self.after(0, lambda: self._set_status(f"✖  Error: {repr(e)}", error=True))
             finally:
                 self.after(0, self._on_done)
 
@@ -307,12 +307,14 @@ def run_analysis(output_dir, image_type_options, display_options, status_callbac
 
     status_callback("Folder setting up")
     output_gen_dir = Path(output_dir) / "DICOM_GENERATION_OUTPUT"
-    images_dir = output_gen_dir / "IMAGES"
+    images_dir = output_gen_dir / "Images"
     image_generator = ImageGenerator(file_out_directory=images_dir)
     if "Artifacts" in image_type_options:
         image_generator.generate_artifacts_images()
     if "Flatness" in image_type_options:
         image_generator.generate_flatness_images()
+    if "Symmetry" in image_type_options:
+        image_generator.generate_symmetry_images()
 
     # for image_type in image_type_options:
     #     status_callback(f"Generating {image_type} images…")

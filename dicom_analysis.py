@@ -1,18 +1,18 @@
 """
 dicom_analysis.py
 
-Walks DICOM_GENERATION_OUTPUT/IMAGES/ recursively, runs your pylinac-based
+Walks DICOM_GENERATION_OUTPUT/Images/ recursively, runs your pylinac-based
 analyzer on every .dcm file found, and writes results to a mirrored path
-under DICOM_GENERATION_OUTPUT/ANALYSIS/.
+under DICOM_GENERATION_OUTPUT/Analysis/.
 
 Folder structure:
     DICOM_GENERATION_OUTPUT/
-      IMAGES/
+      Images/
         Flatness/
           scan_001.dcm
         Field Size/
           scan_001.dcm
-      ANALYSIS/
+      Analysis/
         Flatness/
           scan_001.txt
         Field Size/
@@ -29,8 +29,8 @@ from metrics import run_analysis_on_path  # ← replace with your import
 
 
 _GENERATION_ROOT = "DICOM_GENERATION_OUTPUT"
-_IMAGES_DIR      = "IMAGES"
-_ANALYSIS_DIR    = "ANALYSIS"
+_IMAGES_DIR      = "Images"
+_ANALYSIS_DIR    = "Analysis"
 
 
 def analyze_all(
@@ -38,9 +38,9 @@ def analyze_all(
     status_callback: callable = print,
 ) -> None:
     """
-    Find every .dcm file under DICOM_GENERATION_OUTPUT/IMAGES/ and write
+    Find every .dcm file under output_dir/Images/ and write
     the analysis result string to the mirrored path under
-    DICOM_GENERATION_OUTPUT/ANALYSIS/, replacing the .dcm extension with .txt.
+    output_dir/Analysis/, replacing the .dcm extension with .txt.
 
     Args:
         output_dir:      Top-level directory chosen by the user in the GUI.

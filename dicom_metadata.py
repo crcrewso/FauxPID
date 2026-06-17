@@ -21,7 +21,7 @@ def _load_software_version() -> str:
 PROJECT_VERSION = _load_software_version()
 
 
-def add_metadata(file_name, leaf_jaw_positions=[-50.0, 50.0], gantry_angle=0.0):
+def add_metadata(file_name, gantry_angle=0.0, leaf_jaw_x_positions=[-50.0, 50.0], leaf_jaw_y_positions=[-50.0, 50.0]):
     """
     Adds metadata to the DICOM file specified by file_name. 
     """
@@ -60,15 +60,29 @@ def add_metadata(file_name, leaf_jaw_positions=[-50.0, 50.0], gantry_angle=0.0):
     exposure_dataset.ExposureTime = 1
     exposure_dataset.MetersetExposure = 100
 
-    beam_limiting_device_dataset = dicom.Dataset()
-    beam_limiting_device_dataset.LeafJawPositions = leaf_jaw_positions
+    beam_limiting_device_x = dicom.Dataset()
+    if leaf_jaw_x_positions[0] == -1 * leaf_jaw_x_positions[1]:
+        beam_limiting_device_x.RTBeamLimitingDeviceType = 'X'
+    else:
+        beam_limiting_device_x.RTBeamLimitingDeviceType = 'ASYMX'
+    beam_limiting_device_x.NumberOfLeafJawPairs = 1
+    beam_limiting_device_x.LeafJawPositions = leaf_jaw_x_positions
+
+    beam_limiting_device_y = dicom.Dataset()
+    if leaf_jaw_y_positions[0] == -1 * leaf_jaw_y_positions[1]:
+        beam_limiting_device_y.RTBeamLimitingDeviceType = 'Y'
+    else:
+        beam_limiting_device_y.RTBeamLimitingDeviceType = 'ASYMY'
+    beam_limiting_device_y.NumberOfLeafJawPairs = 1
+    beam_limiting_device_y.LeafJawPositions = leaf_jaw_y_positions
+
     exposure_dataset.GantryAngle = gantry_angle
     exposure_dataset.TableTopVerticalPosition = ds.TableTopVerticalPosition
     exposure_dataset.TableTopLongitudinalPosition = ds.TableTopLongitudinalPosition
     exposure_dataset.TableTopLateralPosition = ds.TableTopLateralPosition
     exposure_dataset.TableTopPitchAngle = ds.TableTopPitchAngle
     exposure_dataset.TableTopRollAngle = ds.TableTopRollAngle
-    exposure_dataset.BeamLimitingDeviceSequence = dicom.Sequence([beam_limiting_device_dataset])
+    exposure_dataset.BeamLimitingDeviceSequence = dicom.Sequence([beam_limiting_device_x, beam_limiting_device_y])
 
     ds.ExposureSequence = dicom.Sequence([exposure_dataset])
     ds.IsocenterPosition = [0.0, 0.0, 0.0]
