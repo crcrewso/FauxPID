@@ -150,28 +150,64 @@ class ImageGenerator:
             leaf_jaw_y_positions=[-100, 100]
         )
 
-        field_sizes_mm = [(20, 20), (40, 40), (60, 60), (80, 80), (100, 100)]
-        cax_offsets_mm = [(0, 0), (10, 0), (0, 10), (10, 10), (0, 0)]
-        for i in range(len(field_sizes_mm)):
-            field_size = field_sizes_mm[i]
-            cax_offset = cax_offsets_mm[i]
-            file_path = dir_path / f"field_size_{field_size[0]}x{field_size[1]}.dcm"
-            field_layers = [
-                layers.FilteredFieldLayer(
-                    field_size_mm=field_size, 
-                    alpha=1.0, 
-                    cax_offset_mm=(0, 0)), 
-                layers.GaussianFilterLayer()
-            ]
-            leaf_jaw_x_positions = [cax_offset[0] - field_size[0]/2, cax_offset[0] + field_size[0]/2]
-            leaf_jaw_y_positions = [cax_offset[1] - field_size[1]/2, cax_offset[1] + field_size[1]/2]
+        file_path = dir_path / "field_size_rotated_5_degrees_10x10.dcm"
+        field_layers = [
+        layers.FilteredFieldLayer(
+        field_size_mm=(100, 100), 
+        alpha=1.0,
+        cax_offset_mm=(0, 0), 
+        rotation=5), 
+        layers.GaussianFilterLayer()
+        ]
+        self.generate_dicom_using_layers(file_path, field_layers)
 
-            self.generate_dicom_using_layers(
-                file_out_name=file_path, 
-                layers=field_layers,
-                leaf_jaw_x_positions=leaf_jaw_x_positions, 
-                leaf_jaw_y_positions=leaf_jaw_y_positions
-            )
+        file_path = dir_path / "field_size_plus_10_mm_10x10.dcm"
+        field_layers = [
+        layers.FilteredFieldLayer(
+        field_size_mm=(100, 110), 
+        alpha=1.0,
+        cax_offset_mm=(0, 5), 
+        rotation=5), 
+        layers.GaussianFilterLayer()
+        ]
+        self.generate_dicom_using_layers(
+            file_path, 
+            field_layers, 
+            leaf_jaw_x_positions=[-50.0, 50.0], # "Normal" metadata
+            leaf_jaw_y_positions=[-50.0, 50.0]
+        )
+
+        file_path = dir_path / "field_size_plus_5_mm_10x10.dcm"
+        field_layers = [
+        layers.FilteredFieldLayer(
+        field_size_mm=(100, 105), 
+        alpha=1.0,
+        cax_offset_mm=(0, 2.5), 
+        rotation=5), 
+        layers.GaussianFilterLayer()
+        ]
+        self.generate_dicom_using_layers(
+            file_path, 
+            field_layers, 
+            leaf_jaw_x_positions=[-50.0, 50.0], # "Normal" metadata
+            leaf_jaw_y_positions=[-50.0, 50.0]
+        )
+
+        file_path = dir_path / "field_size_plus_1_mm_10x10.dcm"
+        field_layers = [
+        layers.FilteredFieldLayer(
+        field_size_mm=(100, 101), 
+        alpha=1.0,
+        cax_offset_mm=(0, 0.5), 
+        rotation=5), 
+        layers.GaussianFilterLayer()
+        ]
+        self.generate_dicom_using_layers(
+            file_path, 
+            field_layers, 
+            leaf_jaw_x_positions=[-50.0, 50.0], # "Normal" metadata
+            leaf_jaw_y_positions=[-50.0, 50.0]
+        )
 
 
     def generate_flatness_images(self):

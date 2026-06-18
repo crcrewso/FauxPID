@@ -357,7 +357,6 @@ def run_analysis_on_path(dcm_path) -> str:
             edge_type=Edge.FWHM,
             ground=True,
             metrics=(
-                
 
                 FieldsizeCalculationByFWHM(),
                 FlatnessCalculationByVariance(),
@@ -372,13 +371,13 @@ def run_analysis_on_path(dcm_path) -> str:
         )
         return analysis.results()
     except Exception as e:
-        return f"Error analyzing {dcm_path.name}: {str(e)}"
+        return f"Error analyzing {dcm_path}: {str(e)}"
 
 
 ## TESTING DELETE LATER
 #path = 'Solstice-m12_d18_2025-FS_EPID_MLC 10x38.dcm'
 # path = 'Solstice-m12_d18_2025-FS_EPID_Jaw 10x10.dcm'
-path = 'Test/symmetry_x_sloped_10x10.dcm'
+#path = 'Test/symmetry_x_sloped_10x10.dcm'
 # field_analyzer = FieldProfileAnalysis(path)
 # field_analyzer.analyze(
 #     centering=Centering.BEAM_CENTER,
@@ -404,4 +403,4 @@ path = 'Test/symmetry_x_sloped_10x10.dcm'
 #     ),
 # )
 # print(field_analyzer.results())
-print(run_analysis_on_path(path))
+#print(run_analysis_on_path(path))

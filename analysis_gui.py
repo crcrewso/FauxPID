@@ -311,13 +311,12 @@ def run_analysis(output_dir, image_type_options, display_options, status_callbac
     image_generator = ImageGenerator(file_out_directory=images_dir)
     if "Artifacts" in image_type_options:
         image_generator.generate_artifacts_images()
+    if "Field Size" in image_type_options:
+        image_generator.generate_field_size_images()
     if "Flatness" in image_type_options:
         image_generator.generate_flatness_images()
     if "Symmetry" in image_type_options:
         image_generator.generate_symmetry_images()
-
-    # for image_type in image_type_options:
-    #     status_callback(f"Generating {image_type} images…")
 
     analyze_all(output_dir=output_gen_dir, status_callback=status_callback)
 
