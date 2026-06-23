@@ -23,18 +23,19 @@ Usage (called from run_analysis in analysis_gui.py):
 
     analyze_all(output_dir=output_dir, status_callback=status_callback)
 """
-
+import json
 from pathlib import Path
+from pprint import pformat
 from metrics import run_analysis_on_path  # ← replace with your import
 
 
-_GENERATION_ROOT = "DICOM_GENERATION_OUTPUT"
 _IMAGES_DIR      = "Images"
 _ANALYSIS_DIR    = "Analysis"
 
 
 def analyze_all(
     output_dir: str | Path,
+    output_format: str = "txt",
     status_callback: callable = print,
 ) -> None:
     """
@@ -49,6 +50,11 @@ def analyze_all(
     base         = Path(output_dir)
     images_root  = base / _IMAGES_DIR
     analysis_root = base / _ANALYSIS_DIR
+
+    fmt = output_format.lower().strip()
+    if fmt not in ("txt", "json"):
+        status_callback(f"⚠  Invalid output format: {output_format}. Must be 'txt' or 'json'.")
+        return
 
     if not images_root.exists():
         status_callback(f"⚠  Images folder not found: {images_root}")
@@ -65,14 +71,17 @@ def analyze_all(
     for i, dcm_path in enumerate(dcm_files, start=1):
         # Preserve the subfolder structure (e.g. Flatness/scan_001.dcm)
         relative    = dcm_path.relative_to(images_root)
-        output_path = (analysis_root / relative).with_suffix(".txt")
+        output_path = (analysis_root / relative).with_suffix(f".{fmt}")
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
         status_callback(f"[{i}/{len(dcm_files)}] {relative}")
 
         try:
-            result_str = run_analysis_on_path(dcm_path)  # ← your function here
-            output_path.write_text(result_str, encoding="utf-8")
+            results_dict = run_analysis_on_path(dcm_path)
+            if fmt == "json":
+                output_path.write_text(json.dumps(results_dict, indent=4), encoding="utf-8")
+            else:
+                output_path.write_text(pformat(results_dict), encoding="utf-8")
         except Exception as exc:
             msg = f"✖  Failed on {relative}: {exc}"
             status_callback(msg)

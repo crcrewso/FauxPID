@@ -2,7 +2,7 @@
 analysis_gui.py
 
 A reusable tkinter GUI for image generation and analysis options.
-Customize the ANALYSIS_OPTIONS and DISPLAY_OPTIONS lists to match your needs,
+Customize the ANALYSIS_OPTIONS and OTHER_OPTIONS lists to match your needs,
 then wire up the `run_analysis` function at the bottom to call your main logic.
 """
 
@@ -26,11 +26,10 @@ IMAGE_TYPE_OPTIONS = [
     "CAX Offset",
 ]
 
-DISPLAY_OPTIONS = [
-    "Show preview after generation",
-    "Overlay annotations",
-    "Use dark background",
-    "Save intermediate steps",
+OTHER_OPTIONS = [
+    "Run analysis on generated images",
+    "Include PNG with each DICOM",
+    "Results as JSON (default is .txt)",
 ]
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -192,26 +191,26 @@ class AnalysisGUI(tk.Tk):
 
         mid = (len(IMAGE_TYPE_OPTIONS) + 1) // 2
         for i, opt in enumerate(IMAGE_TYPE_OPTIONS):
-            var = tk.BooleanVar(value=False)
+            var = tk.BooleanVar(value=True)
             self.image_type_vars[opt] = var
             col = 0 if i < mid else 1
             row = i if i < mid else i - mid
             cb = ttk.Checkbutton(col_frame, text=opt, variable=var)
             cb.grid(row=row, column=col, sticky="w", padx=(0, 24), pady=2)
 
-        # ── Display options ───────────────────────────────────────────────────
-        display_card = ttk.Frame(outer, style="Card.TFrame", padding=14)
-        display_card.pack(fill="x", pady=(0, 10))
+        # ── Other options ───────────────────────────────────────────────────
+        other_card = ttk.Frame(outer, style="Card.TFrame", padding=14)
+        other_card.pack(fill="x", pady=(0, 10))
 
         ttk.Label(
-            display_card, text="DISPLAY OPTIONS", style="Section.TLabel"
+            other_card, text="OTHER OPTIONS", style="Section.TLabel"
         ).pack(anchor="w", pady=(0, 8))
 
-        self.display_vars = {}
-        for opt in DISPLAY_OPTIONS:
-            var = tk.BooleanVar(value=False)
-            self.display_vars[opt] = var
-            ttk.Checkbutton(display_card, text=opt, variable=var).pack(
+        self.other_vars = {}
+        for opt in OTHER_OPTIONS:
+            var = tk.BooleanVar(value=True)
+            self.other_vars[opt] = var
+            ttk.Checkbutton(other_card, text=opt, variable=var).pack(
                 anchor="w", pady=2
             )
 
@@ -257,7 +256,7 @@ class AnalysisGUI(tk.Tk):
             return
 
         chosen_image_type = [k for k, v in self.image_type_vars.items() if v.get()]
-        chosen_display = [k for k, v in self.display_vars.items() if v.get()]
+        chosen_other = [k for k, v in self.other_vars.items() if v.get()]
 
         self.run_btn.configure(state="disabled")
         self.progress.start(12)
@@ -268,7 +267,7 @@ class AnalysisGUI(tk.Tk):
                 run_analysis(
                     output_dir=self.folder_var.get(),
                     image_type_options=chosen_image_type,
-                    display_options=chosen_display,
+                    other_options=chosen_other,
                     status_callback=self._set_status,
                 )
                 self.after(0, lambda: self._set_status("✔  Done!"))
@@ -293,37 +292,57 @@ class AnalysisGUI(tk.Tk):
 
 # ── YOUR LOGIC GOES HERE ──────────────────────────────────────────────────────
 
-def run_analysis(output_dir, image_type_options, display_options, status_callback):
+def run_analysis(output_dir, image_type_options, other_options, status_callback):
     """
     Calls image generation and analysis functions based on the user's selections in the GUI.
     Args:
         output_dir      (str):       Folder path chosen by the user.
         image_type_options (list[str]): Names of checked image type options.
-        display_options  (list[str]): Names of checked display options.
+        other_options  (list[str]): Names of checked other options.
         status_callback  (callable):  Call status_callback("message") to update
                                       the status bar from your worker thread.
     """
-    import time  # remove once you add real logic
+    if "Run analysis on generated images" in other_options:
+        run_analysis_on_generated = True
+    else:
+        run_analysis_on_generated = False
+    if "Include PNG with each DICOM" in other_options:
+        include_png = True
+    else:
+        include_png = False
+    if "Results as JSON (default is .txt)" in other_options:
+        results_as_json = "json"
+    else:
+        results_as_json = "txt"
 
     status_callback("Folder setting up")
     output_gen_dir = Path(output_dir) / "DICOM_GENERATION_OUTPUT"
     images_dir = output_gen_dir / "Images"
-    image_generator = ImageGenerator(file_out_directory=images_dir)
+    image_generator = ImageGenerator(file_out_directory=images_dir, include_png=include_png)
     if "Artifacts" in image_type_options:
+        status_callback("Generating Artifacts images…")
         image_generator.generate_artifacts_images()
     if "Field Size" in image_type_options:
+        status_callback("Generating Field Size images…")
         image_generator.generate_field_size_images()
     if "Flatness" in image_type_options:
+        status_callback("Generating Flatness images…")
         image_generator.generate_flatness_images()
     if "Symmetry" in image_type_options:
+        status_callback("Generating Symmetry images…")
         image_generator.generate_symmetry_images()
+    if "CAX Offset" in image_type_options:
+        status_callback("Generating CAX Offset images…")
+        image_generator.generate_cax_offset_images()
 
-    analyze_all(output_dir=output_gen_dir, status_callback=status_callback)
+    if run_analysis_on_generated:
+        status_callback("Analyzing generated images…")
+        analyze_all(output_dir=output_gen_dir, status_callback=status_callback, output_format=results_as_json)
 
 
-    # Example: respect display options
-    if "Show preview after generation" in display_options:
-        pass  # ← open your preview window here
+    # Example: respect other options
+    if "Run analysis on generated images" in other_options:
+        pass  # ← run analysis on generated images
 
 
 # ─────────────────────────────────────────────────────────────────────────────

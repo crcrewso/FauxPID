@@ -13,10 +13,17 @@ import pylinac.core.image_generator.layers as layers
 from dicom_metadata import add_metadata
 
 class ImageGenerator:
-    def __init__(self, file_out_directory : Path, simulator: type[Simulator] = AS1200Image, sid=1000):
+    def __init__(
+            self, 
+            file_out_directory : Path, 
+            simulator: type[Simulator] = AS1200Image, 
+            sid=1000, 
+            include_png: bool = True
+            ):
         self.file_out_directory = file_out_directory
         self.sid = sid
         self.simulator = simulator
+        self.include_png = include_png
 
     def generate_dicom_using_layers(self, file_out_name, layers, **metadata_kwargs):
         """
@@ -110,6 +117,87 @@ class ImageGenerator:
         simulator_instance.generate_dicom(file_out_name=file_path, gantry_angle=0)
         add_metadata(file_path, gantry_angle=0)
         plt.imsave(file_path.with_suffix('.png'), simulator_instance.image)
+
+    def generate_cax_offset_images(self):
+        dir_path = self.file_out_directory / "CAX Offset"
+        dir_path.mkdir(parents=True, exist_ok=True)
+
+        file_path = dir_path / "cax_offset_10_mm_10x10.dcm"
+        field_layers = [
+        layers.FilteredFieldLayer(
+            field_size_mm=(100, 100),
+            alpha=0.9,
+            cax_offset_mm=(0, 10)
+        ),
+        layers.GaussianFilterLayer()
+        ]
+        self.generate_dicom_using_layers(file_path, field_layers)
+
+        file_path = dir_path / "cax_offset_5_mm_10x10.dcm"
+        field_layers = [
+        layers.FilteredFieldLayer(
+            field_size_mm=(100, 100),
+            alpha=0.9,
+            cax_offset_mm=(0, 5)
+        ),
+        layers.GaussianFilterLayer()
+        ]
+        self.generate_dicom_using_layers(file_path, field_layers)
+
+        file_path = dir_path / "cax_offset_1_mm_10x10.dcm"
+        field_layers = [
+        layers.FilteredFieldLayer(
+            field_size_mm=(100, 100),
+            alpha=0.9,
+            cax_offset_mm=(0, 1)
+        ),
+        layers.GaussianFilterLayer()
+        ]
+        self.generate_dicom_using_layers(file_path, field_layers)
+
+        file_path = dir_path / "cax_offset_minus_3_mm_x_10x10.dcm"
+        field_layers = [
+        layers.FilteredFieldLayer(
+            field_size_mm=(100, 100),
+            alpha=0.9,
+            cax_offset_mm=(0, -3)
+        ),
+        layers.GaussianFilterLayer()
+        ]
+        self.generate_dicom_using_layers(file_path, field_layers)
+
+        file_path = dir_path / "cax_offset_minus_1_mm_y_10x10.dcm"
+        field_layers = [
+        layers.FilteredFieldLayer(
+            field_size_mm=(100, 100),
+            alpha=0.9,
+            cax_offset_mm=(-1, 0)
+        ),
+        layers.GaussianFilterLayer()
+        ]
+        self.generate_dicom_using_layers(file_path, field_layers)
+
+        file_path = dir_path / "cax_offset_5_mm_y_10x10.dcm"
+        field_layers = [
+        layers.FilteredFieldLayer(
+            field_size_mm=(100, 100),
+            alpha=0.9,
+            cax_offset_mm=(5, 0)
+        ),
+        layers.GaussianFilterLayer()
+        ]
+        self.generate_dicom_using_layers(file_path, field_layers)
+
+        file_path = dir_path / "cax_offset_7_mm_x_and_y_10x10.dcm"
+        field_layers = [
+        layers.FilteredFieldLayer(
+            field_size_mm=(100, 100),
+            alpha=0.9,
+            cax_offset_mm=(7, 7)
+        ),
+        layers.GaussianFilterLayer()
+        ]
+        self.generate_dicom_using_layers(file_path, field_layers)
 
     def generate_field_size_images(self):
         dir_path = self.file_out_directory / "Field Size"

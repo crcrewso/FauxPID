@@ -79,6 +79,26 @@ class FieldsizeCalculationByFWHM(ProfileMetric):
         left_index, right_index = get_field_indices(self.profile.values)
         return (right_index - left_index + 1) / self.profile.dpmm
 
+class CAXOffsetFromBeamCenter(ProfileMetric):
+    """
+    This metric calculates the CAX offset from the beam center by finding the indices of the left and right field edges in 
+    the profile using FWHM, and then calculating the distance from the beam center to the CAX in mm. 
+    The beam center is calculated as the midpoint between the left and right field edges calculated by FWHM. 
+    Positive values indicate the CAX is to the right or below (outward) the beam center. 
+    Where the edges of a region are in between indices, the indices closer to the center are used.
+    """
+    name = "CAX Offset from Beam Center"
+    unit = "mm"
+
+    def __init__(self, color="g", linestyle="-."):
+        super().__init__(color=color, linestyle=linestyle)
+
+    def calculate(self) -> float:
+        left_index, right_index = get_field_indices(self.profile.values)
+        beam_center_index = (left_index + right_index) / 2
+        cax_index = self.profile.cax_index
+        return (beam_center_index - cax_index) / self.profile.dpmm
+
 ### FLATNESS METRICS ###
 class FlatnessCalculationByVariance(ProfileMetric):
     """
@@ -347,7 +367,7 @@ class SymmetryCalculationByArea(ProfileMetric):
             right_index += 1
         return (right_area_sum - left_area_sum) / (right_area_sum + left_area_sum) * 200
 
-def run_analysis_on_path(dcm_path) -> str:
+def run_analysis_on_path(dcm_path) -> dict:
     try:
         analysis = FieldProfileAnalysis(str(dcm_path))
         analysis.analyze(
@@ -357,8 +377,9 @@ def run_analysis_on_path(dcm_path) -> str:
             edge_type=Edge.FWHM,
             ground=True,
             metrics=(
-
                 FieldsizeCalculationByFWHM(),
+                CAXOffsetFromBeamCenter(),
+
                 FlatnessCalculationByVariance(),
                 FlatnessCalculationByRatio(), 
                 FlatnessCalculationByCaxVariance(),
@@ -369,9 +390,13 @@ def run_analysis_on_path(dcm_path) -> str:
                 SymmetryCalculationByArea(),
             ),
         )
-        return analysis.results()
+        return analysis.results_data(
+            as_dict=True, 
+            by_alias=True, 
+            exclude={"x_metrics": {"values"}, "y_metrics": {"values"}, "centering": True}
+        ) # Return as JSON with alias names for metrics
     except Exception as e:
-        return f"Error analyzing {dcm_path}: {str(e)}"
+        return {"error": f"Error analyzing {dcm_path}: {str(e)}"}
 
 
 ## TESTING DELETE LATER
