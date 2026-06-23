@@ -36,7 +36,8 @@ class ImageGenerator:
             simulator_instance.add_layer(layer)
         simulator_instance.generate_dicom(file_out_name=file_out_name, gantry_angle=0)
         add_metadata(file_out_name, **metadata_kwargs)
-        plt.imsave(file_out_name.with_suffix('.png'), simulator_instance.image)
+        if self.include_png:
+            plt.imsave(file_out_name.with_suffix('.png'), simulator_instance.image)
         return simulator_instance
 
     def generate_artifacts_images(self, dead_detector_field_position_percent : float = 30.0):
@@ -64,7 +65,8 @@ class ImageGenerator:
         simulator_instance.add_layer(layers.GaussianFilterLayer())
         simulator_instance.generate_dicom(file_out_name=file_path, gantry_angle=0)
         add_metadata(file_path, gantry_angle=0)
-        plt.imsave(file_path.with_suffix('.png'), simulator_instance.image)
+        if self.include_png:
+            plt.imsave(file_path.with_suffix('.png'), simulator_instance.image)
 
 
         file_path = dir_path / "artifact_detector_increase_10x10.dcm"
@@ -82,7 +84,8 @@ class ImageGenerator:
         simulator_instance.add_layer(layers.GaussianFilterLayer())
         simulator_instance.generate_dicom(file_out_name=file_path, gantry_angle=0)
         add_metadata(file_path, gantry_angle=0)
-        plt.imsave(file_path.with_suffix('.png'), simulator_instance.image)
+        if self.include_png:
+            plt.imsave(file_path.with_suffix('.png'), simulator_instance.image)
 
 
         file_path = dir_path / "artifact_vertical_bar_10x10.dcm"
@@ -99,7 +102,8 @@ class ImageGenerator:
         simulator_instance.image = simulator_instance.image + 0.5 * addimage.image
         simulator_instance.add_layer(layers.GaussianFilterLayer())
         simulator_instance.generate_dicom(file_out_name=file_path, gantry_angle=0)
-        plt.imsave(file_path.with_suffix('.png'), simulator_instance.image)
+        if self.include_png:
+            plt.imsave(file_path.with_suffix('.png'), simulator_instance.image)
 
 
         file_path = dir_path / "artifact_zero_4_columns_10x10.dcm"
@@ -116,7 +120,8 @@ class ImageGenerator:
         simulator_instance.image[:, center_column_offset: center_column_offset + 4] = 0
         simulator_instance.generate_dicom(file_out_name=file_path, gantry_angle=0)
         add_metadata(file_path, gantry_angle=0)
-        plt.imsave(file_path.with_suffix('.png'), simulator_instance.image)
+        if self.include_png:
+            plt.imsave(file_path.with_suffix('.png'), simulator_instance.image)
 
     def generate_cax_offset_images(self):
         dir_path = self.file_out_directory / "CAX Offset"
