@@ -398,6 +398,17 @@ def run_analysis_on_path(dcm_path) -> dict:
     except Exception as e:
         return {"error": f"Error analyzing {dcm_path}: {str(e)}"}
 
+from pylinac.core.image_generator import AS1200Image
+import pylinac.core.image_generator.layers as layers
+simulator_instance = AS1200Image()  
+simulator_instance.add_layer(layers.PerfectFieldLayer(field_size_mm=(10, 10)))
+simulator_instance.add_layer(layers.GaussianFilterLayer())
+file_out_name = "test_perfect_image.dcm"
+
+simulator_instance.generate_dicom(file_out_name=file_out_name)
+results = run_analysis_on_path(file_out_name)
+
+print(results)
 
 ## TESTING DELETE LATER
 #path = 'Solstice-m12_d18_2025-FS_EPID_MLC 10x38.dcm'
