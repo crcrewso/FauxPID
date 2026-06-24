@@ -11,6 +11,8 @@ from tkinter import ttk, filedialog
 import threading
 from pathlib import Path
 import tomllib
+import json
+from datetime import datetime
 from dicom_analysis import analyze_all
 from create_image import ImageGenerator
 
@@ -32,6 +34,19 @@ OTHER_OPTIONS = [
     "Results as JSON (default is .txt)",
 ]
 
+DEFAULT_IMAGE_TYPE_OPTIONS = [
+    "Artifacts",
+    "Field Size",
+    "Flatness",
+    "Symmetry",
+    "CAX Offset",
+]
+
+DEFAULT_OTHER_OPTIONS = [
+    "Include PNG with each DICOM",
+    "Results as JSON (default is .txt)",
+]
+
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -46,6 +61,8 @@ def _load_project_version() -> str:
 
 
 PROJECT_VERSION = _load_project_version()
+SETTINGS_DIRNAME = ".linacdicomimagesuite"
+SETTINGS_FILENAME = "analysis_gui_settings.toml"
 
 
 class AnalysisGUI(tk.Tk):
@@ -57,6 +74,8 @@ class AnalysisGUI(tk.Tk):
 
         self._build_styles()
         self._build_ui()
+        self._apply_settings(self._load_settings())
+        self.protocol("WM_DELETE_WINDOW", self._on_close)
 
     # ── Styles ────────────────────────────────────────────────────────────────
 
@@ -249,6 +268,114 @@ class AnalysisGUI(tk.Tk):
         if folder:
             self.folder_var.set(folder)
 
+    def _settings_path(self) -> Path:
+        return Path.home() / SETTINGS_DIRNAME / SETTINGS_FILENAME
+
+    def _default_settings(self) -> dict[str, object]:
+        return {
+            "output_dir": "",
+            "image_type_options": list(DEFAULT_IMAGE_TYPE_OPTIONS),
+            "other_options": list(DEFAULT_OTHER_OPTIONS),
+            "last_updated": datetime.now().isoformat(),
+        }
+
+    def _load_settings(self) -> dict[str, object]:
+        settings_path = self._settings_path()
+        defaults = self._default_settings()
+
+        if not settings_path.exists():
+            self._save_settings(defaults)
+            return defaults
+
+        try:
+            with settings_path.open("rb") as settings_file:
+                loaded_settings = tomllib.load(settings_file)
+        except (OSError, tomllib.TOMLDecodeError):
+            self._save_settings(defaults)
+            return defaults
+
+        if not isinstance(loaded_settings, dict):
+            self._save_settings(defaults)
+            return defaults
+
+        image_type_options = [
+            option
+            for option in loaded_settings.get("image_type_options", defaults["image_type_options"])
+            if option in IMAGE_TYPE_OPTIONS
+        ]
+        other_options = [
+            option
+            for option in loaded_settings.get("other_options", defaults["other_options"])
+            if option in OTHER_OPTIONS
+        ]
+
+        if not image_type_options:
+            image_type_options = list(IMAGE_TYPE_OPTIONS)
+        if not other_options:
+            other_options = list(OTHER_OPTIONS)
+
+        return {
+            "output_dir": str(loaded_settings.get("output_dir", "")),
+            "image_type_options": image_type_options,
+            "other_options": other_options,
+        }
+
+    def _save_settings(self, settings: dict[str, object] | None = None) -> None:
+        settings = settings or self._collect_settings()
+        settings_path = self._settings_path()
+        try:
+            settings_path.parent.mkdir(parents=True, exist_ok=True)
+            settings_path.write_text(self._format_toml_settings(settings), encoding="utf-8")
+        except OSError:
+            pass
+
+    def _format_toml_settings(self, settings: dict[str, object]) -> str:
+        def format_string(value: object) -> str:
+            return json.dumps(str(value), ensure_ascii=False)
+
+        def format_string_list(values: object) -> str:
+            items = [format_string(value) for value in values if value is not None]
+            return "[" + ", ".join(items) + "]"
+
+        output_dir = format_string(settings.get("output_dir", ""))
+        image_type_options = format_string_list(settings.get("image_type_options", []))
+        other_options = format_string_list(settings.get("other_options", []))
+        last_updated = format_string(settings.get("last_updated", datetime.now().isoformat()))
+
+        return (
+            "output_dir = " + output_dir + "\n"
+            + "image_type_options = " + image_type_options + "\n"
+            + "other_options = " + other_options + "\n"
+            + "last_updated = " + last_updated + "\n"
+        )
+
+    def _collect_settings(self) -> dict[str, object]:
+        return {
+            "output_dir": self.folder_var.get(),
+            "image_type_options": [
+                option for option, variable in self.image_type_vars.items() if variable.get()
+            ],
+            "other_options": [
+                option for option, variable in self.other_vars.items() if variable.get()
+            ],
+            "last_updated": datetime.now().isoformat(),
+        }
+
+    def _apply_settings(self, settings: dict[str, object]) -> None:
+        self.folder_var.set(str(settings.get("output_dir", "")))
+
+        selected_image_types = set(settings.get("image_type_options", []))
+        for option, variable in self.image_type_vars.items():
+            variable.set(option in selected_image_types)
+
+        selected_other_options = set(settings.get("other_options", []))
+        for option, variable in self.other_vars.items():
+            variable.set(option in selected_other_options)
+
+    def _on_close(self):
+        self._save_settings()
+        self.destroy()
+
     def _on_run(self):
         """Validate inputs, then run analysis in a background thread."""
         if not self.folder_var.get():
@@ -257,6 +384,8 @@ class AnalysisGUI(tk.Tk):
 
         chosen_image_type = [k for k, v in self.image_type_vars.items() if v.get()]
         chosen_other = [k for k, v in self.other_vars.items() if v.get()]
+
+        self._save_settings()
 
         self.run_btn.configure(state="disabled")
         self.progress.start(12)
