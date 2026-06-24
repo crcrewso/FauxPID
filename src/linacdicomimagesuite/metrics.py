@@ -393,7 +393,16 @@ def run_analysis_on_path(dcm_path) -> dict:
         return analysis.results_data(
             as_dict=True, 
             by_alias=True, 
-            exclude={"x_metrics": {"values"}, "y_metrics": {"values"}, "centering": True}
+            exclude={
+                "x_metrics": {"values"}, 
+                "y_metrics": {"values"}, 
+                "centering": True, 
+                "pylinac_version": True, 
+                "normalization": True, 
+                "edge_type": True, 
+                "ground": True,
+                "center": True, 
+            }
         ) # Return as JSON with alias names for metrics
     except Exception as e:
         return {"error": f"Error analyzing {dcm_path}: {str(e)}"}

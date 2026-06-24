@@ -32,7 +32,7 @@ The generated files are written under:
 The checkbox labels shown in the GUI come from these lists in `analysis_gui.py`:
 
 - `IMAGE_TYPE_OPTIONS`
-- `DISPLAY_OPTIONS`
+- `OTHER_OPTIONS`
 
 To add or remove options, update those lists and then wire the new option into `run_analysis(...)`.
 
