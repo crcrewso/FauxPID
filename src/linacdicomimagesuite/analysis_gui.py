@@ -62,7 +62,7 @@ def _load_project_version() -> str:
 
 PROJECT_VERSION = _load_project_version()
 SETTINGS_DIRNAME = ".linacdicomimagesuite"
-SETTINGS_FILENAME = "analysis_gui_settings.toml"
+SETTINGS_FILENAME = "settings.toml"
 
 
 class AnalysisGUI(tk.Tk):

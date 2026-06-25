@@ -37,5 +37,5 @@ When returning JSON, here's an example of results:
 
 `warnings` is a list of errors encountered while running the metrics. Note that this does not include errors propogating from elsewhere. 
 
-`x_metrics` and `y_metrics` have the same keys always and give the metrics for the x profile and y profile respectively. 
+`x_metrics` and `y_metrics` have the same keys and give the metrics for the x profile and y profile respectively. 
 
