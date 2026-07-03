@@ -5,12 +5,6 @@ import math
 from pylinac import FieldProfileAnalysis, Centering, Normalization, Edge
 from pylinac.metrics.profile import (
     ProfileMetric,
-    PenumbraLeftMetric,
-    PenumbraRightMetric,
-    SymmetryAreaMetric,
-    FlatnessDifferenceMetric,
-    FlatnessRatioMetric,
-    SymmetryPointDifferenceMetric,
 )
 
 # Finds the value of the central axis (CAX) by taking the average of the two middle values in the profile. This is a common method for finding the CAX value in a profile, as it is less sensitive to noise than taking the maximum value.
@@ -368,6 +362,10 @@ class SymmetryCalculationByArea(ProfileMetric):
         return (right_area_sum - left_area_sum) / (right_area_sum + left_area_sum) * 200
 
 def run_analysis_on_path(dcm_path) -> dict:
+    """
+    Takes in a path to a DICOM file and runs analysis on the field profiles using the custom metrics defined above. 
+    Returns a dictionary of the results with alias (human readable) names for the metrics.
+    """
     try:
         analysis = FieldProfileAnalysis(str(dcm_path))
         analysis.analyze(
@@ -403,38 +401,7 @@ def run_analysis_on_path(dcm_path) -> dict:
                 "ground": True,
                 "center": True, 
             }
-        ) # Return as JSON with alias names for metrics
+        )
     except Exception as e:
         return {"error": f"Error analyzing {dcm_path}: {str(e)}"}
 
-
-## TESTING DELETE LATER
-#path = 'Solstice-m12_d18_2025-FS_EPID_MLC 10x38.dcm'
-# path = 'Solstice-m12_d18_2025-FS_EPID_Jaw 10x10.dcm'
-#path = 'Test/symmetry_x_sloped_10x10.dcm'
-# field_analyzer = FieldProfileAnalysis(path)
-# field_analyzer.analyze(
-#     centering=Centering.BEAM_CENTER,
-#     # x_width=0.02,
-#     # y_width=0.02,
-#     normalization=Normalization.BEAM_CENTER,
-#     edge_type=Edge.FWHM,
-#     ground=True,
-#     metrics=(
-#         PenumbraLeftMetric(),
-#         PenumbraRightMetric(),
-#         SymmetryAreaMetric(),
-#         FlatnessDifferenceMetric(),
-#         SymmetryPointDifferenceMetric(),
-#         FlatnessCalculationByVariance(),
-#         FlatnessRatioMetric(),
-#         FlatnessCalculationByRatio(), 
-#         FlatnessCalculationByCaxVariance(),
-#         FlatnessCalculationByCaxRatio(),
-#         SymmetryCalculationByCAXPointDifference(),
-#         SymmetryCalculationByPointRatio(),
-#         SymmetryCalculationByArea()
-#     ),
-# )
-# print(field_analyzer.results())
-#print(run_analysis_on_path(path))

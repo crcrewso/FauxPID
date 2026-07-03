@@ -26,6 +26,7 @@ IMAGE_TYPE_OPTIONS = [
     "Symmetry",
     "Orthogonality",
     "CAX Offset",
+    "Winston-Lutz",
 ]
 
 OTHER_OPTIONS = [
@@ -40,6 +41,7 @@ DEFAULT_IMAGE_TYPE_OPTIONS = [
     "Flatness",
     "Symmetry",
     "CAX Offset",
+    "Winston-Lutz",
 ]
 
 DEFAULT_OTHER_OPTIONS = [
@@ -463,6 +465,9 @@ def run_analysis(output_dir, image_type_options, other_options, status_callback)
     if "CAX Offset" in image_type_options:
         status_callback("Generating CAX Offset images…")
         image_generator.generate_cax_offset_images()
+    if "Winston-Lutz" in image_type_options:
+        status_callback("Generating Winston-Lutz images…")
+        image_generator.generate_winston_lutz_images()
 
     if run_analysis_on_generated:
         status_callback("Analyzing generated images…")

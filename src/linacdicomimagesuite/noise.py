@@ -119,3 +119,4 @@ def plot_nps_comparison(real_image, simulated_noisy_image, roi_size=256, pixel_s
 
 sim_image = load_epid("test_images\cax_offset_10_mm_10x10.dcm")
 real_image = load_epid("test_images\Solstice-m12_d18_2025-FS_EPID_Jaw 10x10.dcm")
+nps = measure_nps(real_image, roi_size=256, pixel_size_mm=0.336)

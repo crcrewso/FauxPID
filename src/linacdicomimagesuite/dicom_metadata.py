@@ -21,7 +21,14 @@ def _load_software_version() -> str:
 PROJECT_VERSION = _load_software_version()
 
 
-def add_metadata(file_name, gantry_angle=0.0, leaf_jaw_x_positions=[-50.0, 50.0], leaf_jaw_y_positions=[-50.0, 50.0]):
+def add_metadata(
+        file_name, 
+        gantry_angle=0.0, 
+        beam_limiting_device_angle=0.0,
+        patient_support_angle=0.0,
+        leaf_jaw_x_positions=[-50.0, 50.0], 
+        leaf_jaw_y_positions=[-50.0, 50.0]
+    ):
     """
     Adds metadata to the DICOM file specified by file_name. 
     """
@@ -46,8 +53,9 @@ def add_metadata(file_name, gantry_angle=0.0, leaf_jaw_x_positions=[-50.0, 50.0]
     ds.PixelIntensityRelationship = 'LIN'
     ds.PixelIntensityRelationshipSign = 1
 
-    ds.BeamLimitingDeviceAngle = 0.0
-    ds.PatientSupportAngle = 0.0
+    ds.GantryAngle = gantry_angle
+    ds.BeamLimitingDeviceAngle = beam_limiting_device_angle
+    ds.PatientSupportAngle = patient_support_angle
 
     ds.TableTopVerticalPosition = 0.0
     ds.TableTopLongitudinalPosition = 20.0
