@@ -21,11 +21,11 @@ from create_image import ImageGenerator
 
 IMAGE_TYPE_OPTIONS = [
     "Artifacts",
+    "CAX Offset",
     "Field Size",
     "Flatness",
+#    "Orthogonality",
     "Symmetry",
-    "Orthogonality",
-    "CAX Offset",
     "Winston-Lutz",
 ]
 
