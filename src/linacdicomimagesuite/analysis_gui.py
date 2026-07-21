@@ -9,6 +9,8 @@ then wire up the `run_analysis` function at the bottom to call your main logic.
 import tkinter as tk
 from tkinter import ttk, filedialog
 import threading
+import os
+import subprocess
 from pathlib import Path
 import tomllib
 import json
@@ -33,6 +35,7 @@ OTHER_OPTIONS = [
     "Run analysis on generated images",
     "Include PNG with each DICOM",
     "Results as JSON (default is .txt)",
+    "Open output folder after generation",
 ]
 
 DEFAULT_IMAGE_TYPE_OPTIONS = [
@@ -76,6 +79,8 @@ class AnalysisGUI(tk.Tk):
 
         self._build_styles()
         self._build_ui()
+        self._open_when_done = False
+        self._run_succeeded = False
         self._apply_settings(self._load_settings())
         self.protocol("WM_DELETE_WINDOW", self._on_close)
 
@@ -247,6 +252,14 @@ class AnalysisGUI(tk.Tk):
         )
         self.run_btn.pack(fill="x", pady=(0, 8))
 
+        self.open_btn = ttk.Button(
+            run_frame,
+            text="Open Output Folder",
+            style="Browse.TButton",
+            command=self._open_output_directory,
+        )
+        self.open_btn.pack(anchor="e", pady=(0, 8))
+
         self.progress = ttk.Progressbar(
             run_frame, mode="determinate", style="TProgressbar"
         )
@@ -269,6 +282,34 @@ class AnalysisGUI(tk.Tk):
         folder = filedialog.askdirectory(title="Select output directory")
         if folder:
             self.folder_var.set(folder)
+
+    def _target_output_directory(self) -> Path | None:
+        output_dir = self.folder_var.get().strip()
+        if not output_dir:
+            return None
+
+        selected_dir = Path(output_dir)
+        generated_dir = selected_dir / "DICOM_GENERATION_OUTPUT"
+        return generated_dir if generated_dir.exists() else selected_dir
+
+    def _open_output_directory(self):
+        target_dir = self._target_output_directory()
+        if target_dir is None:
+            self._set_status("⚠  Please select an output directory first.", error=True)
+            return
+
+        if not target_dir.exists():
+            self._set_status("⚠  Output directory does not exist yet.", error=True)
+            return
+
+        try:
+            if hasattr(os, "startfile"):
+                os.startfile(str(target_dir))
+            else:
+                subprocess.Popen(["xdg-open", str(target_dir)])
+            self._set_status(f"Opened folder: {target_dir}")
+        except Exception as exc:
+            self._set_status(f"✖  Could not open folder: {exc}", error=True)
 
     def _settings_path(self) -> Path:
         return Path.home() / SETTINGS_DIRNAME / SETTINGS_FILENAME
@@ -386,6 +427,8 @@ class AnalysisGUI(tk.Tk):
 
         chosen_image_type = [k for k, v in self.image_type_vars.items() if v.get()]
         chosen_other = [k for k, v in self.other_vars.items() if v.get()]
+        self._open_when_done = "Open output folder after generation" in chosen_other
+        self._run_succeeded = False
 
         self._save_settings()
 
@@ -401,6 +444,7 @@ class AnalysisGUI(tk.Tk):
                     other_options=chosen_other,
                     status_callback=self._set_status,
                 )
+                self._run_succeeded = True
                 self.after(0, lambda: self._set_status("✔  Done!"))
             except Exception as e:
                 self.after(0, lambda: self._set_status(f"✖  Error: {repr(e)}", error=True))
@@ -412,6 +456,8 @@ class AnalysisGUI(tk.Tk):
     def _on_done(self):
         self.progress.stop()
         self.run_btn.configure(state="normal")
+        if self._run_succeeded and self._open_when_done:
+            self._open_output_directory()
 
     def _set_status(self, msg, error=False):
         color = "#e94560" if error else "#606080"

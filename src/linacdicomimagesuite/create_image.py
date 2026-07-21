@@ -902,4 +902,79 @@ class ImageGenerator:
             patient_support_angle=0.0, 
         )
 
+        file_path = dir_path / "winston_lutz_1mm_right_coll_000_10x10.dcm"
+        field_layers = [
+            layers.FilteredFieldLayer(
+                field_size_mm=(50, 50),
+                alpha=0.9,
+                cax_offset_mm=(0, 0)
+            ),
+            layers.PerfectBBLayer(alpha=-0.5, bb_size_mm=6, cax_offset_mm=(0, 1)),
+            layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(53, 0)),
+            layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(-53, 0)),
+        ]
+        initial_offset = 25
+        for i in range(0, 8):
+            step_size = 7
+            offset = (initial_offset + i * step_size, 0)
+            field_layers.append(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=offset
+                )
+            )
+            field_layers.append(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=(-1 * offset[0], offset[1])
+                )
+            )
+        field_layers.append(layers.RandomNoiseLayer())
+        field_layers.append(layers.GaussianFilterLayer(sigma_mm=2))
+        self.generate_dicom_using_layers(
+            file_path, 
+            field_layers, 
+            gantry_angle=0.0, 
+            beam_limiting_device_angle=0.0, 
+            patient_support_angle=0.0, 
+        )
+
+        file_path = dir_path / "winston_lutz_1mm_right_coll_045_10x10.dcm" #Using add layer because rotations are not supported
+        simulator_instance = self.simulator(sid=self.sid)
+        simulator_instance.add_layer(layers.FilteredFieldLayer(
+                field_size_mm=(50, 50),
+                alpha=0.9,
+                cax_offset_mm=(0, 0)
+            ))
+        simulator_instance.add_layer(layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(53, 0)))
+        simulator_instance.add_layer(layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(-53, 0)))
+        initial_offset = 25
+        for i in range(0, 8):
+            step_size = 7
+            offset = (initial_offset + i * step_size, 0)
+            simulator_instance.add_layer(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=offset
+                )
+            )
+            simulator_instance.add_layer(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=(-1 * offset[0], offset[1])
+                )
+            )
+        simulator_instance.image = ndimage.rotate(simulator_instance.image, 45, reshape=False, mode='nearest')
+        simulator_instance.add_layer(layers.PerfectBBLayer(alpha=-0.5, bb_size_mm=6, cax_offset_mm=(0, 1)))
+        simulator_instance.add_layer(layers.RandomNoiseLayer())
+        simulator_instance.add_layer(layers.GaussianFilterLayer(sigma_mm=2))
+        simulator_instance.generate_dicom(file_out_name=file_path, gantry_angle=0)
+        add_metadata(file_path, gantry_angle=0.0, beam_limiting_device_angle=45.0, patient_support_angle=0.0)
+        if self.include_png:
+            plt.imsave(file_path.with_suffix('.png'), simulator_instance.image)
+
 
