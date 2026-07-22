@@ -2,9 +2,18 @@
 
 This project provides a simple GUI for generating DICOM images and running analysis on the output.
 
+## Setup 
+
+You may need to install Python (3.12) first. 
+Using UV:
+
+1. Create a new virtual environment using `uv venv .venv`
+2. Activate it if you haven't already: `.venv/Scripts/Activate.ps1`
+3. Download dependencies using `uv sync`
+
 ## How to Use
 
-1. Run `main.py`.
+1. Run `python src/linacdicomimagesuite/main.py`.
 2. Choose an output directory.
 3. Select the image options you want.
 4. Click **Generate**.
