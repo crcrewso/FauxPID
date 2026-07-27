@@ -243,7 +243,7 @@ class AnalysisGUI(tk.Tk):
         
         # ── Run + status ──────────────────────────────────────────────────────
         run_frame = tk.Frame(outer, bg="#e0e0f0")
-        run_frame.pack(fill="x", pady=(10, 0))
+        run_frame.pack(fill="x", pady=(0, 10))
 
         
 
