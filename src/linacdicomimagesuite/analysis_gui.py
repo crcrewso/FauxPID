@@ -215,13 +215,23 @@ class AnalysisGUI(tk.Tk):
         col_frame = tk.Frame(image_type_card, bg="#e0e0f0")
         col_frame.pack(fill="x")
 
+        checkbox_kwargs = {
+            "bg": "#e0e0f0",
+            "fg": "#000000",
+            "activebackground": "#e0e0f0",
+            "activeforeground": "#4AA3FF",
+            "selectcolor": "#e0e0f0",
+            "highlightthickness": 0,
+            "font": ("Segoe UI", 10),
+        }
+
         mid = (len(IMAGE_TYPE_OPTIONS) + 1) // 2
         for i, opt in enumerate(IMAGE_TYPE_OPTIONS):
             var = tk.BooleanVar(value=True)
             self.image_type_vars[opt] = var
             col = 0 if i < mid else 1
             row = i if i < mid else i - mid
-            cb = ttk.Checkbutton(col_frame, text=opt, variable=var)
+            cb = tk.Checkbutton(col_frame, text=opt, variable=var, **checkbox_kwargs)
             cb.grid(row=row, column=col, sticky="w", padx=(0, 24), pady=2)
 
         # ── Other options ───────────────────────────────────────────────────
@@ -236,7 +246,7 @@ class AnalysisGUI(tk.Tk):
         for opt in OTHER_OPTIONS:
             var = tk.BooleanVar(value=True)
             self.other_vars[opt] = var
-            ttk.Checkbutton(other_card, text=opt, variable=var).pack(
+            tk.Checkbutton(other_card, text=opt, variable=var, **checkbox_kwargs).pack(
                 anchor="w", pady=2
             )
 
