@@ -56,7 +56,7 @@ DEFAULT_OTHER_OPTIONS = [
 
 
 def _load_project_version() -> str:
-    pyproject_path = Path(__file__).with_name("pyproject.toml")
+    pyproject_path = Path(__file__).resolve().parents[2] / "pyproject.toml"
     try:
         with pyproject_path.open("rb") as pyproject_file:
             project_data = tomllib.load(pyproject_file)
@@ -240,9 +240,12 @@ class AnalysisGUI(tk.Tk):
                 anchor="w", pady=2
             )
 
+        
         # ── Run + status ──────────────────────────────────────────────────────
         run_frame = tk.Frame(outer, bg="#e0e0f0")
         run_frame.pack(fill="x", pady=(10, 0))
+
+        
 
         self.run_btn = ttk.Button(
             run_frame,
@@ -251,14 +254,6 @@ class AnalysisGUI(tk.Tk):
             command=self._on_run,
         )
         self.run_btn.pack(fill="x", pady=(0, 8))
-
-        self.open_btn = ttk.Button(
-            run_frame,
-            text="Open Output Folder",
-            style="Browse.TButton",
-            command=self._open_output_directory,
-        )
-        self.open_btn.pack(anchor="e", pady=(0, 8))
 
         self.progress = ttk.Progressbar(
             run_frame, mode="determinate", style="TProgressbar"
@@ -275,6 +270,14 @@ class AnalysisGUI(tk.Tk):
             anchor="w",
         )
         status_label.pack(fill="x")
+
+        self.open_btn = ttk.Button(
+            outer,
+            text="Open Output Folder",
+            style="Browse.TButton",
+            command=self._open_output_directory,
+        )
+        self.open_btn.pack(anchor="e", pady=(0, 8))
 
     # ── Helpers ───────────────────────────────────────────────────────────────
 
