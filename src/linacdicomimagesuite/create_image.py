@@ -499,7 +499,10 @@ class ImageGenerator:
         dir_path = self.file_out_directory / "Winston-Lutz"
         dir_path.mkdir(parents=True, exist_ok=True)
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_coll_000.dcm"
+        dir_perfect = dir_path / "perfect"
+        dir_perfect.mkdir(parents=True, exist_ok=True)
+
+        file_path = dir_perfect / "winston_lutz_perfect_coll_000.dcm"
         field_layers = [
             layers.FilteredFieldLayer(
                 field_size_mm=(50, 50),
@@ -538,7 +541,7 @@ class ImageGenerator:
             patient_support_angle=0.0, 
         )
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_coll_045.dcm" #Using add layer because rotations are not supported
+        file_path = dir_perfect / "winston_lutz_perfect_coll_045.dcm" #Using add layer because rotations are not supported
         simulator_instance = self.simulator(sid=self.sid)
         simulator_instance.add_layer(layers.FilteredFieldLayer(
                 field_size_mm=(50, 50),
@@ -574,7 +577,7 @@ class ImageGenerator:
         if self.include_png:
             plt.imsave(file_path.with_suffix('.png'), simulator_instance.image)
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_coll_090.dcm"
+        file_path = dir_perfect / "winston_lutz_perfect_coll_090.dcm"
         simulator_instance = self.simulator(sid=self.sid)
         simulator_instance.add_layer(layers.FilteredFieldLayer(
                 field_size_mm=(50, 50),
@@ -610,7 +613,7 @@ class ImageGenerator:
         if self.include_png:
             plt.imsave(file_path.with_suffix('.png'), simulator_instance.image)
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_coll_135.dcm"
+        file_path = dir_perfect / "winston_lutz_perfect_coll_135.dcm"
         simulator_instance = self.simulator(sid=self.sid)
         simulator_instance.add_layer(layers.FilteredFieldLayer(
                 field_size_mm=(50, 50),
@@ -646,7 +649,7 @@ class ImageGenerator:
         if self.include_png:
             plt.imsave(file_path.with_suffix('.png'), simulator_instance.image)
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_coll_225.dcm"
+        file_path = dir_perfect / "winston_lutz_perfect_coll_225.dcm"
         simulator_instance = self.simulator(sid=self.sid)
         simulator_instance.add_layer(layers.FilteredFieldLayer(
                 field_size_mm=(50, 50),
@@ -682,7 +685,7 @@ class ImageGenerator:
         if self.include_png:
             plt.imsave(file_path.with_suffix('.png'), simulator_instance.image)
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_coll_270.dcm"
+        file_path = dir_perfect / "winston_lutz_perfect_coll_270.dcm"
         simulator_instance = self.simulator(sid=self.sid)
         simulator_instance.add_layer(layers.FilteredFieldLayer(
                 field_size_mm=(50, 50),
@@ -718,7 +721,7 @@ class ImageGenerator:
         if self.include_png:
             plt.imsave(file_path.with_suffix('.png'), simulator_instance.image)
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_coll_315.dcm"
+        file_path = dir_perfect / "winston_lutz_perfect_coll_315.dcm"
         simulator_instance = self.simulator(sid=self.sid)
         simulator_instance.add_layer(layers.FilteredFieldLayer(
                 field_size_mm=(50, 50),
@@ -754,9 +757,7 @@ class ImageGenerator:
         if self.include_png:
             plt.imsave(file_path.with_suffix('.png'), simulator_instance.image)
 
-
-
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_couch_000.dcm"
+        file_path = dir_perfect / "winston_lutz_perfect_couch_000.dcm"
         field_layers = [
             layers.FilteredFieldLayer(
                 field_size_mm=(50, 50),
@@ -795,7 +796,7 @@ class ImageGenerator:
             patient_support_angle=0.0, 
         )
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_couch_045.dcm"
+        file_path = dir_perfect / "winston_lutz_perfect_couch_045.dcm"
         self.generate_dicom_using_layers(
             file_path, 
             field_layers, 
@@ -804,7 +805,7 @@ class ImageGenerator:
             patient_support_angle=45.0, 
         )
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_couch_090.dcm"
+        file_path = dir_perfect / "winston_lutz_perfect_couch_090.dcm"
         self.generate_dicom_using_layers(
             file_path, 
             field_layers, 
@@ -813,7 +814,7 @@ class ImageGenerator:
             patient_support_angle=90.0, 
         )
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_couch_270.dcm"
+        file_path = dir_perfect / "winston_lutz_perfect_couch_270.dcm"
         self.generate_dicom_using_layers(
             file_path, 
             field_layers, 
@@ -822,7 +823,7 @@ class ImageGenerator:
             patient_support_angle=270.0, 
         )
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_couch_315.dcm"
+        file_path = dir_perfect / "winston_lutz_perfect_couch_315.dcm"
         self.generate_dicom_using_layers(
             file_path, 
             field_layers, 
@@ -831,7 +832,7 @@ class ImageGenerator:
             patient_support_angle=315.0, 
         )
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_gantry_000.dcm"
+        file_path = dir_perfect / "winston_lutz_perfect_gantry_000.dcm"
         self.generate_dicom_using_layers(
             file_path, 
             field_layers, 
@@ -840,7 +841,7 @@ class ImageGenerator:
             patient_support_angle=0.0, 
         )
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_gantry_045.dcm"
+        file_path = dir_perfect / "winston_lutz_perfect_gantry_045.dcm"
         self.generate_dicom_using_layers(
             file_path, 
             field_layers, 
@@ -849,7 +850,7 @@ class ImageGenerator:
             patient_support_angle=0.0, 
         )
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_gantry_090.dcm"
+        file_path = dir_perfect / "winston_lutz_perfect_gantry_090.dcm"
         self.generate_dicom_using_layers(
             file_path, 
             field_layers, 
@@ -858,7 +859,7 @@ class ImageGenerator:
             patient_support_angle=0.0, 
         )
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_gantry_135.dcm"
+        file_path = dir_perfect / "winston_lutz_perfect_gantry_135.dcm"
         self.generate_dicom_using_layers(
             file_path, 
             field_layers, 
@@ -867,7 +868,7 @@ class ImageGenerator:
             patient_support_angle=0.0, 
         )
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_gantry_180.dcm"
+        file_path = dir_perfect / "winston_lutz_perfect_gantry_180.dcm"
         self.generate_dicom_using_layers(
             file_path, 
             field_layers, 
@@ -876,7 +877,7 @@ class ImageGenerator:
             patient_support_angle=0.0, 
         )
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_gantry_225.dcm"
+        file_path = dir_perfect / "winston_lutz_perfect_gantry_225.dcm"
         self.generate_dicom_using_layers(
             file_path, 
             field_layers, 
@@ -885,7 +886,7 @@ class ImageGenerator:
             patient_support_angle=0.0, 
         )
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_gantry_270.dcm"
+        file_path = dir_perfect / "winston_lutz_perfect_gantry_270.dcm"
         self.generate_dicom_using_layers(
             file_path, 
             field_layers, 
@@ -894,7 +895,7 @@ class ImageGenerator:
             patient_support_angle=0.0, 
         )
 
-        file_path = dir_path / "perfect" / "winston_lutz_perfect_gantry_315.dcm"
+        file_path = dir_perfect / "winston_lutz_perfect_gantry_315.dcm"
         self.generate_dicom_using_layers(
             file_path, 
             field_layers, 
@@ -903,7 +904,10 @@ class ImageGenerator:
             patient_support_angle=0.0, 
         )
 
-        file_path = dir_path / "1mm_right" / "winston_lutz_1mm_right_coll_000.dcm"
+        dir_1mm_right = dir_path / "1mm_right"
+        dir_1mm_right.mkdir(parents=True, exist_ok=True)
+
+        file_path = dir_1mm_right / "winston_lutz_1mm_right_coll_000.dcm"
         field_layers = [
             layers.FilteredFieldLayer(
                 field_size_mm=(50, 50),
@@ -942,7 +946,7 @@ class ImageGenerator:
             patient_support_angle=0.0, 
         )
 
-        file_path = dir_path / "1mm_right" / "winston_lutz_1mm_right_coll_045.dcm" #Using add layer because rotations are not supported
+        file_path = dir_1mm_right / "winston_lutz_1mm_right_coll_045.dcm" #Using add layer because rotations are not supported
         simulator_instance = self.simulator(sid=self.sid)
         simulator_instance.add_layer(layers.FilteredFieldLayer(
                 field_size_mm=(50, 50),
