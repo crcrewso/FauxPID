@@ -26,7 +26,7 @@ IMAGE_TYPE_OPTIONS = [
     "CAX Offset",
     "Field Size",
     "Flatness",
-#    "Orthogonality",
+    "Penumbra",
     "Symmetry",
     "Winston-Lutz",
 ]

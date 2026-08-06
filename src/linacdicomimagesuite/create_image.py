@@ -491,6 +491,96 @@ class ImageGenerator:
         ]
         self.generate_dicom_using_layers(file_path, field_layers)
 
+    def generate_penumbra_images(self):
+        """
+        Generates DICOM files with penumbra variations at the specified directory path.
+        """
+        dir_path = self.file_out_directory / "Penumbra"
+        dir_path.mkdir(parents=True, exist_ok=True)
+
+        file_path = dir_path / "penumbra_perfect.dcm"
+        field_layers = [
+            layers.FilteredFieldLayer(
+                field_size_mm=(100, 100),
+                alpha=0.2,
+                gaussian_height=0.1,
+                gaussian_sigma_mm=32.0,
+                cax_offset_mm=(0, 0)),
+        ]
+        self.generate_dicom_using_layers(file_path, field_layers)
+
+        file_path = dir_path / "penumbra_realistic.dcm"
+        field_layers = [
+            layers.FilteredFieldLayer(
+                field_size_mm=(100, 100),
+                alpha=0.2,
+                gaussian_height=0.1,
+                gaussian_sigma_mm=32.0,
+                cax_offset_mm=(0, 0)),
+            layers.GaussianFilterLayer(sigma_mm=2)
+        ]
+        self.generate_dicom_using_layers(file_path, field_layers)
+
+        file_path = dir_path / "penumbra_1_mm.dcm"
+        field_layers = [
+            layers.FilteredFieldLayer(
+                field_size_mm=(100, 100),
+                alpha=0.2,
+                gaussian_height=0.1,
+                gaussian_sigma_mm=32.0,
+                cax_offset_mm=(0, 0)),
+            layers.GaussianFilterLayer(sigma_mm=0.6)
+        ]
+        self.generate_dicom_using_layers(file_path, field_layers)
+
+        file_path = dir_path / "penumbra_1_mm.dcm"
+        field_layers = [
+            layers.FilteredFieldLayer(
+                field_size_mm=(100, 100),
+                alpha=0.2,
+                gaussian_height=0.1,
+                gaussian_sigma_mm=32.0,
+                cax_offset_mm=(0, 0)),
+            layers.GaussianFilterLayer(sigma_mm=0.6)
+        ]
+        self.generate_dicom_using_layers(file_path, field_layers)
+
+        file_path = dir_path / "penumbra_2_mm.dcm"
+        field_layers = [
+            layers.FilteredFieldLayer(
+                field_size_mm=(100, 100),
+                alpha=0.2,
+                gaussian_height=0.1,
+                gaussian_sigma_mm=32.0,
+                cax_offset_mm=(0, 0)),
+            layers.GaussianFilterLayer(sigma_mm=1.2)
+        ]
+        self.generate_dicom_using_layers(file_path, field_layers)
+
+        file_path = dir_path / "penumbra_2_mm.dcm"
+        field_layers = [
+            layers.FilteredFieldLayer(
+                field_size_mm=(100, 100),
+                alpha=0.2,
+                gaussian_height=0.1,
+                gaussian_sigma_mm=32.0,
+                cax_offset_mm=(0, 0)),
+            layers.GaussianFilterLayer(sigma_mm=1.2)
+        ]
+        self.generate_dicom_using_layers(file_path, field_layers)
+
+        file_path = dir_path / "penumbra_10_mm.dcm"
+        field_layers = [
+            layers.FilteredFieldLayer(
+                field_size_mm=(100, 100),
+                alpha=0.2,
+                gaussian_height=0.1,
+                gaussian_sigma_mm=32.0,
+                cax_offset_mm=(0, 0)),
+            layers.GaussianFilterLayer(sigma_mm=6.0)
+        ]
+        self.generate_dicom_using_layers(file_path, field_layers)
+
     def generate_winston_lutz_images(self):
         """
         Generates DICOM files with Winston-Lutz variations at the specified directory path.
@@ -1708,5 +1798,5 @@ class ImageGenerator:
             patient_support_angle=0.0, 
         )
 
-        
+
 
