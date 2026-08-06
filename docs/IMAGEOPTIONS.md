@@ -36,3 +36,31 @@ The generated images contain a bb near the center of the image with a simulated 
 Note that the gantry looking down from the ceiling corresponds to a gantry angle of $0^\circ$ in this dataset. 
 
 The MLC is simulated using a combination of small negative bbs and lines combined with blurring. 
+
+
+### Collimater Rotation
+
+Collimater rotation does not change the observed position of the bb. Therefore, other than the MLC rotating, there should be no observed change in the image. 
+
+### Couch Rotation
+
+Couch rotation does change the position of the bb. If the bb was originally at some position $(x, y, z)$ where positive $x$ is to the right and positive $z$ is towards the ceiling, then a 45 degree couch rotation (clockwise when viewing from above) moves the bb to 
+$$\left(\frac{\sqrt 2}{2} x - \frac{\sqrt 2}{2} y, \frac{\sqrt 2}{2} x + \frac{\sqrt 2}{2} y, z\right)$$
+This was found by rotating unit vectors in the $x$ direction and $y$ direction seperately and taking their sums. Note that this formula can be used twice to get a $90^\circ$ rotation, three times for a $135^\circ$ rotation, etc. 
+
+### Gantry Rotation
+
+The rotation of the gantry has the same effect as a couch rotation except along different axes. The $y$ axis is unaffected by the gantry rotation similar to the $z$ axis in the couch rotation. For a $45^\circ$ gantry rotation, we have
+$$ \left(\frac{\sqrt 2}{2} x+ \frac{\sqrt 2}{2} z, y, -\frac{\sqrt 2}{2} x + \frac{\sqrt 2}{2} z\right) $$
+
+### Perfect
+
+This set of images has the bb at the center. All images therefore see the bb at the same place. The only difference is the surrounding MLC. 
+
+### 1mm right
+
+Positionally the bb is at (1, 0, 0) where positive x is to the right and positive z is towards the ceiling when the gantry is at $0^\circ$. 
+
+
+
+

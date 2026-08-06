@@ -1396,4 +1396,317 @@ class ImageGenerator:
             patient_support_angle=315.0, 
         )
 
+        file_path = dir_1mm_right / "winston_lutz_1mm_right_gantry_000.dcm"
+        field_layers = [
+            layers.FilteredFieldLayer(
+                field_size_mm=(50, 50),
+                alpha=0.9,
+                cax_offset_mm=(0, 0)
+            ),
+            layers.PerfectBBLayer(alpha=-0.5, bb_size_mm=6, cax_offset_mm=(0.0, 1.0)),
+            layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(53, 0)),
+            layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(-53, 0)),
+        ]
+        initial_offset = 25
+        for i in range(0, 8):
+            step_size = 7
+            offset = (initial_offset + i * step_size, 0)
+            field_layers.append(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=offset
+                )
+            )
+            field_layers.append(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=(-1 * offset[0], offset[1])
+                )
+            )
+        field_layers.append(layers.RandomNoiseLayer())
+        field_layers.append(layers.GaussianFilterLayer(sigma_mm=2))
+        self.generate_dicom_using_layers(
+            file_path, 
+            field_layers, 
+            gantry_angle=0.0, 
+            beam_limiting_device_angle=0.0, 
+            patient_support_angle=0.0, 
+        )
+
+        file_path = dir_1mm_right / "winston_lutz_1mm_right_gantry_045.dcm"
+        field_layers = [
+            layers.FilteredFieldLayer(
+                field_size_mm=(50, 50),
+                alpha=0.9,
+                cax_offset_mm=(0, 0)
+            ),
+            layers.PerfectBBLayer(alpha=-0.5, bb_size_mm=6, cax_offset_mm=(0.0, 0.707)),
+            layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(53, 0)),
+            layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(-53, 0)),
+        ]
+        initial_offset = 25
+        for i in range(0, 8):
+            step_size = 7
+            offset = (initial_offset + i * step_size, 0)
+            field_layers.append(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=offset
+                )
+            )
+            field_layers.append(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=(-1 * offset[0], offset[1])
+                )
+            )
+        field_layers.append(layers.RandomNoiseLayer())
+        field_layers.append(layers.GaussianFilterLayer(sigma_mm=2))
+        self.generate_dicom_using_layers(
+            file_path, 
+            field_layers, 
+            gantry_angle=45.0, 
+            beam_limiting_device_angle=0.0, 
+            patient_support_angle=0.0, 
+        )
+
+        file_path = dir_1mm_right / "winston_lutz_1mm_right_gantry_090.dcm"
+        field_layers = [
+            layers.FilteredFieldLayer(
+                field_size_mm=(50, 50),
+                alpha=0.9,
+                cax_offset_mm=(0, 0)
+            ),
+            layers.PerfectBBLayer(alpha=-0.5, bb_size_mm=6, cax_offset_mm=(0.0, 0.0)),
+            layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(53, 0)),
+            layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(-53, 0)),
+        ]
+        initial_offset = 25
+        for i in range(0, 8):
+            step_size = 7
+            offset = (initial_offset + i * step_size, 0)
+            field_layers.append(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=offset
+                )
+            )
+            field_layers.append(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=(-1 * offset[0], offset[1])
+                )
+            )
+        field_layers.append(layers.RandomNoiseLayer())
+        field_layers.append(layers.GaussianFilterLayer(sigma_mm=2))
+        self.generate_dicom_using_layers(
+            file_path, 
+            field_layers, 
+            gantry_angle=90.0, 
+            beam_limiting_device_angle=0.0, 
+            patient_support_angle=0.0, 
+        )
+
+        file_path = dir_1mm_right / "winston_lutz_1mm_right_gantry_135.dcm"
+        field_layers = [
+            layers.FilteredFieldLayer(
+                field_size_mm=(50, 50),
+                alpha=0.9,
+                cax_offset_mm=(0, 0)
+            ),
+            layers.PerfectBBLayer(alpha=-0.5, bb_size_mm=6, cax_offset_mm=(0.0, -0.707)),
+            layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(53, 0)),
+            layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(-53, 0)),
+        ]
+        initial_offset = 25
+        for i in range(0, 8):
+            step_size = 7
+            offset = (initial_offset + i * step_size, 0)
+            field_layers.append(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=offset
+                )
+            )
+            field_layers.append(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=(-1 * offset[0], offset[1])
+                )
+            )
+        field_layers.append(layers.RandomNoiseLayer())
+        field_layers.append(layers.GaussianFilterLayer(sigma_mm=2))
+        self.generate_dicom_using_layers(
+            file_path, 
+            field_layers, 
+            gantry_angle=135.0, 
+            beam_limiting_device_angle=0.0, 
+            patient_support_angle=0.0, 
+        )
+
+        file_path = dir_1mm_right / "winston_lutz_1mm_right_gantry_180.dcm"
+        field_layers = [
+            layers.FilteredFieldLayer(
+                field_size_mm=(50, 50),
+                alpha=0.9,
+                cax_offset_mm=(0, 0)
+            ),
+            layers.PerfectBBLayer(alpha=-0.5, bb_size_mm=6, cax_offset_mm=(0.0, -1.0)),
+            layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(53, 0)),
+            layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(-53, 0)),
+        ]
+        initial_offset = 25
+        for i in range(0, 8):
+            step_size = 7
+            offset = (initial_offset + i * step_size, 0)
+            field_layers.append(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=offset
+                )
+            )
+            field_layers.append(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=(-1 * offset[0], offset[1])
+                )
+            )
+        field_layers.append(layers.RandomNoiseLayer())
+        field_layers.append(layers.GaussianFilterLayer(sigma_mm=2))
+        self.generate_dicom_using_layers(
+            file_path, 
+            field_layers, 
+            gantry_angle=45.0, 
+            beam_limiting_device_angle=0.0, 
+            patient_support_angle=0.0, 
+        )
+
+        file_path = dir_1mm_right / "winston_lutz_1mm_right_gantry_225.dcm"
+        field_layers = [
+            layers.FilteredFieldLayer(
+                field_size_mm=(50, 50),
+                alpha=0.9,
+                cax_offset_mm=(0, 0)
+            ),
+            layers.PerfectBBLayer(alpha=-0.5, bb_size_mm=6, cax_offset_mm=(0.0, -0.707)),
+            layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(53, 0)),
+            layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(-53, 0)),
+        ]
+        initial_offset = 25
+        for i in range(0, 8):
+            step_size = 7
+            offset = (initial_offset + i * step_size, 0)
+            field_layers.append(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=offset
+                )
+            )
+            field_layers.append(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=(-1 * offset[0], offset[1])
+                )
+            )
+        field_layers.append(layers.RandomNoiseLayer())
+        field_layers.append(layers.GaussianFilterLayer(sigma_mm=2))
+        self.generate_dicom_using_layers(
+            file_path, 
+            field_layers, 
+            gantry_angle=45.0, 
+            beam_limiting_device_angle=0.0, 
+            patient_support_angle=0.0, 
+        )
+
+        file_path = dir_1mm_right / "winston_lutz_1mm_right_gantry_270.dcm"
+        field_layers = [
+            layers.FilteredFieldLayer(
+                field_size_mm=(50, 50),
+                alpha=0.9,
+                cax_offset_mm=(0, 0)
+            ),
+            layers.PerfectBBLayer(alpha=-0.5, bb_size_mm=6, cax_offset_mm=(0.0, 0.0)),
+            layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(53, 0)),
+            layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(-53, 0)),
+        ]
+        initial_offset = 25
+        for i in range(0, 8):
+            step_size = 7
+            offset = (initial_offset + i * step_size, 0)
+            field_layers.append(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=offset
+                )
+            )
+            field_layers.append(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=(-1 * offset[0], offset[1])
+                )
+            )
+        field_layers.append(layers.RandomNoiseLayer())
+        field_layers.append(layers.GaussianFilterLayer(sigma_mm=2))
+        self.generate_dicom_using_layers(
+            file_path, 
+            field_layers, 
+            gantry_angle=270.0, 
+            beam_limiting_device_angle=0.0, 
+            patient_support_angle=0.0, 
+        )
+
+        file_path = dir_1mm_right / "winston_lutz_1mm_right_gantry_315.dcm"
+        field_layers = [
+            layers.FilteredFieldLayer(
+                field_size_mm=(50, 50),
+                alpha=0.9,
+                cax_offset_mm=(0, 0)
+            ),
+            layers.PerfectBBLayer(alpha=-0.5, bb_size_mm=6, cax_offset_mm=(0.0, 0.707)),
+            layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(53, 0)),
+            layers.PerfectFieldLayer(field_size_mm=(56, 2), alpha=0.5, cax_offset_mm=(-53, 0)),
+        ]
+        initial_offset = 25
+        for i in range(0, 8):
+            step_size = 7
+            offset = (initial_offset + i * step_size, 0)
+            field_layers.append(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=offset
+                )
+            )
+            field_layers.append(
+                layers.PerfectBBLayer(
+                    bb_size_mm=3,
+                    alpha=0.5,
+                    cax_offset_mm=(-1 * offset[0], offset[1])
+                )
+            )
+        field_layers.append(layers.RandomNoiseLayer())
+        field_layers.append(layers.GaussianFilterLayer(sigma_mm=2))
+        self.generate_dicom_using_layers(
+            file_path, 
+            field_layers, 
+            gantry_angle=315.0, 
+            beam_limiting_device_angle=0.0, 
+            patient_support_angle=0.0, 
+        )
+
+        
 
