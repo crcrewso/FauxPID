@@ -40,10 +40,11 @@ OTHER_OPTIONS = [
 
 DEFAULT_IMAGE_TYPE_OPTIONS = [
     "Artifacts",
+    "CAX Offset",
     "Field Size",
     "Flatness",
+    "Penumbra",
     "Symmetry",
-    "CAX Offset",
     "Winston-Lutz",
 ]
 
@@ -512,18 +513,21 @@ def run_analysis(output_dir, image_type_options, other_options, status_callback)
     if "Artifacts" in image_type_options:
         status_callback("Generating Artifacts images…")
         image_generator.generate_artifacts_images()
+    if "CAX Offset" in image_type_options:
+            status_callback("Generating CAX Offset images…")
+            image_generator.generate_cax_offset_images()
     if "Field Size" in image_type_options:
         status_callback("Generating Field Size images…")
         image_generator.generate_field_size_images()
     if "Flatness" in image_type_options:
         status_callback("Generating Flatness images…")
         image_generator.generate_flatness_images()
+    if "Penumbra" in image_type_options:
+        status_callback("Generating Penumbra images…")
+        image_generator.generate_penumbra_images()
     if "Symmetry" in image_type_options:
         status_callback("Generating Symmetry images…")
         image_generator.generate_symmetry_images()
-    if "CAX Offset" in image_type_options:
-        status_callback("Generating CAX Offset images…")
-        image_generator.generate_cax_offset_images()
     if "Winston-Lutz" in image_type_options:
         status_callback("Generating Winston-Lutz images…")
         image_generator.generate_winston_lutz_images()
