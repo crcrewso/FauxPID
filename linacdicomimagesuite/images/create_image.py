@@ -10,7 +10,7 @@ from scipy import ndimage
 from pylinac.core.image_generator import AS1200Image
 from pylinac.core.image_generator.simulators import Simulator
 import pylinac.core.image_generator.layers as layers
-from dicom_metadata import add_metadata
+from ..utils.dicom_metadata import add_metadata
 
 class ImageGenerator:
     def __init__(

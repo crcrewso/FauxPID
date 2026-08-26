@@ -15,8 +15,8 @@ from pathlib import Path
 import tomllib
 import json
 from datetime import datetime
-from dicom_analysis import analyze_all
-from create_image import ImageGenerator
+from ..utils.dicom_analysis import analyze_all
+from ..images.create_image import ImageGenerator
 
 
 # ── Customize your options here ──────────────────────────────────────────────

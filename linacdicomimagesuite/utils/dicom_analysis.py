@@ -26,7 +26,7 @@ Usage (called from run_analysis in analysis_gui.py):
 import json
 from pathlib import Path
 from pprint import pformat
-from metrics import run_analysis_on_path  # ← replace with your import
+from ..algorithms.metrics import run_analysis_on_path  # ← replace with your import
 
 
 _IMAGES_DIR      = "Images"
