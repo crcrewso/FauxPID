@@ -118,7 +118,8 @@ class FlatnessCalculationByVariance(ProfileMetric):
 
         left_roi_index = math.ceil(cax_index - (cax_index - left_field_index) * self.in_field_ratio) # Round towards center
         right_roi_index = math.floor(cax_index + (right_field_index - cax_index) * self.in_field_ratio) # Round towards center
-
+        if values[left_roi_index:right_roi_index+1].max() + values[left_roi_index:right_roi_index+1].min() == 0:
+            raise ValueError("Cannot calculate flatness variance.")
         return (
             100
             * (values[left_roi_index:right_roi_index+1].max() - values[left_roi_index:right_roi_index+1].min())
@@ -162,6 +163,9 @@ class FlatnessCalculationByRatio(ProfileMetric):
             right_roi_index = math.floor(cax_index + (right_length_mm * 0.8) * self.profile.dpmm)
         else:
             right_roi_index = math.floor(cax_index + (right_length_mm - 60) * self.profile.dpmm)
+
+        if values[left_roi_index:right_roi_index+1].min() == 0:
+            raise ValueError("Minimum value in the ROI is zero, cannot calculate flatness ratio.")
         return (
             100
             * (values[left_roi_index:right_roi_index+1].max())
