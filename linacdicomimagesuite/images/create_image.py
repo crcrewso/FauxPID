@@ -697,7 +697,7 @@ class ImageGenerator:
             )
         simulator_instance.add_layer(layers.RandomNoiseLayer())
         simulator_instance.add_layer(layers.GaussianFilterLayer(sigma_mm=2))
-        simulator_instance.image = ndimage.rotate(simulator_instance.image, 45, reshape=False, mode='nearest')
+        simulator_instance.image = ndimage.rotate(simulator_instance.image, 90, reshape=False, mode='nearest')
         simulator_instance.generate_dicom(file_out_name=file_path, gantry_angle=0)
         add_metadata(file_path, gantry_angle=0.0, beam_limiting_device_angle=90.0, patient_support_angle=0.0)
         if self.include_png:
@@ -733,7 +733,7 @@ class ImageGenerator:
             )
         simulator_instance.add_layer(layers.RandomNoiseLayer())
         simulator_instance.add_layer(layers.GaussianFilterLayer(sigma_mm=2))
-        simulator_instance.image = ndimage.rotate(simulator_instance.image, 45, reshape=False, mode='nearest')
+        simulator_instance.image = ndimage.rotate(simulator_instance.image, 135, reshape=False, mode='nearest')
         simulator_instance.generate_dicom(file_out_name=file_path, gantry_angle=0)
         add_metadata(file_path, gantry_angle=0.0, beam_limiting_device_angle=135.0, patient_support_angle=0.0)
         if self.include_png:
@@ -769,7 +769,7 @@ class ImageGenerator:
             )
         simulator_instance.add_layer(layers.RandomNoiseLayer())
         simulator_instance.add_layer(layers.GaussianFilterLayer(sigma_mm=2))
-        simulator_instance.image = ndimage.rotate(simulator_instance.image, 45, reshape=False, mode='nearest')
+        simulator_instance.image = ndimage.rotate(simulator_instance.image, 225, reshape=False, mode='nearest')
         simulator_instance.generate_dicom(file_out_name=file_path, gantry_angle=0)
         add_metadata(file_path, gantry_angle=0.0, beam_limiting_device_angle=225.0, patient_support_angle=0.0)
         if self.include_png:
@@ -805,7 +805,7 @@ class ImageGenerator:
             )
         simulator_instance.add_layer(layers.RandomNoiseLayer())
         simulator_instance.add_layer(layers.GaussianFilterLayer(sigma_mm=2))
-        simulator_instance.image = ndimage.rotate(simulator_instance.image, 45, reshape=False, mode='nearest')
+        simulator_instance.image = ndimage.rotate(simulator_instance.image, 270, reshape=False, mode='nearest')
         simulator_instance.generate_dicom(file_out_name=file_path, gantry_angle=0)
         add_metadata(file_path, gantry_angle=0.0, beam_limiting_device_angle=270.0, patient_support_angle=0.0)
         if self.include_png:
@@ -841,7 +841,7 @@ class ImageGenerator:
             )
         simulator_instance.add_layer(layers.RandomNoiseLayer())
         simulator_instance.add_layer(layers.GaussianFilterLayer(sigma_mm=2))
-        simulator_instance.image = ndimage.rotate(simulator_instance.image, 45, reshape=False, mode='nearest')
+        simulator_instance.image = ndimage.rotate(simulator_instance.image, 315, reshape=False, mode='nearest')
         simulator_instance.generate_dicom(file_out_name=file_path, gantry_angle=0)
         add_metadata(file_path, gantry_angle=0.0, beam_limiting_device_angle=315.0, patient_support_angle=0.0)
         if self.include_png:

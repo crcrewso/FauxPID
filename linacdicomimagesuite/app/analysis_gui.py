@@ -17,6 +17,7 @@ import json
 from datetime import datetime
 from ..utils.dicom_analysis import analyze_all
 from ..images.create_image import ImageGenerator
+from ..utils.resource_staging import stage_resources_for_image_type
 
 
 # ── Customize your options here ──────────────────────────────────────────────
@@ -509,27 +510,36 @@ def run_analysis(output_dir, image_type_options, other_options, status_callback)
     status_callback("Folder setting up")
     output_gen_dir = Path(output_dir) / "DICOM_GENERATION_OUTPUT"
     images_dir = output_gen_dir / "Images"
+    resources_dir = output_gen_dir / "Resources"
+    resources_dir.mkdir(parents=True, exist_ok=True)
     image_generator = ImageGenerator(file_out_directory=images_dir, include_png=include_png)
     if "Artifacts" in image_type_options:
         status_callback("Generating Artifacts images…")
+        stage_resources_for_image_type(resources_dir, "Artifacts")
         image_generator.generate_artifacts_images()
     if "CAX Offset" in image_type_options:
-            status_callback("Generating CAX Offset images…")
-            image_generator.generate_cax_offset_images()
+        status_callback("Generating CAX Offset images…")
+        stage_resources_for_image_type(resources_dir, "CAX Offset")
+        image_generator.generate_cax_offset_images()
     if "Field Size" in image_type_options:
         status_callback("Generating Field Size images…")
+        stage_resources_for_image_type(resources_dir, "Field Size")
         image_generator.generate_field_size_images()
     if "Flatness" in image_type_options:
         status_callback("Generating Flatness images…")
+        stage_resources_for_image_type(resources_dir, "Flatness")
         image_generator.generate_flatness_images()
     if "Penumbra" in image_type_options:
         status_callback("Generating Penumbra images…")
+        stage_resources_for_image_type(resources_dir, "Penumbra")
         image_generator.generate_penumbra_images()
     if "Symmetry" in image_type_options:
         status_callback("Generating Symmetry images…")
+        stage_resources_for_image_type(resources_dir, "Symmetry")
         image_generator.generate_symmetry_images()
     if "Winston-Lutz" in image_type_options:
         status_callback("Generating Winston-Lutz images…")
+        stage_resources_for_image_type(resources_dir, "Winston-Lutz")
         image_generator.generate_winston_lutz_images()
 
     if run_analysis_on_generated:
