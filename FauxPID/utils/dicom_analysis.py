@@ -52,17 +52,10 @@ def analyze_all(
     analysis_root = base / _ANALYSIS_DIR
 
     fmt = output_format.lower().strip()
-    if fmt not in ("txt", "json"):
-        status_callback(f"⚠  Invalid output format: {output_format}. Must be 'txt' or 'json'.")
-        return
-
-    if not images_root.exists():
-        status_callback(f"⚠  Images folder not found: {images_root}")
-        return
 
     dcm_files = sorted(images_root.rglob("*.dcm"))
     if not dcm_files:
-        status_callback(f"⚠  No .dcm files found under {images_root}")
+        status_callback(f"No .dcm files found under {images_root}")
         return
 
     status_callback(f"Found {len(dcm_files)} DICOM file(s) — starting analysis…")
@@ -83,11 +76,11 @@ def analyze_all(
             else:
                 output_path.write_text(pformat(results_dict), encoding="utf-8")
         except Exception as exc:
-            msg = f"✖  Failed on {relative}: {exc}"
+            msg = f"Failed on {relative}: {exc}"
             status_callback(msg)
             errors.append(msg)
 
     if errors:
-        status_callback(f"⚠  Analysis done with {len(errors)} error(s).")
+        status_callback(f"Analysis done with {len(errors)} error(s).")
     else:
-        status_callback(f"✔  Analysis complete → {analysis_root}")
+        status_callback(f"Analysis complete -> {analysis_root}")

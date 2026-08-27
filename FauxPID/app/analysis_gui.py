@@ -510,9 +510,11 @@ def run_analysis(output_dir, image_type_options, other_options, status_callback)
     status_callback("Folder setting up")
     output_gen_dir = Path(output_dir) / "DICOM_GENERATION_OUTPUT"
     images_dir = output_gen_dir / "Images"
+    image_generator = ImageGenerator(file_out_directory=images_dir, include_png=include_png)
+
     resources_dir = output_gen_dir / "Resources"
     resources_dir.mkdir(parents=True, exist_ok=True)
-    image_generator = ImageGenerator(file_out_directory=images_dir, include_png=include_png)
+    
     if "Artifacts" in image_type_options:
         status_callback("Generating Artifacts images…")
         stage_resources_for_image_type(resources_dir, "Artifacts")
@@ -546,10 +548,6 @@ def run_analysis(output_dir, image_type_options, other_options, status_callback)
         status_callback("Analyzing generated images…")
         analyze_all(output_dir=output_gen_dir, status_callback=status_callback, output_format=results_as_json)
 
-
-    # Example: respect other options
-    if "Run analysis on generated images" in other_options:
-        pass  # ← run analysis on generated images
 
 
 # ─────────────────────────────────────────────────────────────────────────────
