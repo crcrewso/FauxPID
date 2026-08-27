@@ -1,6 +1,6 @@
 from pylinac.core.image_generator import AS1200Image
 import pylinac.core.image_generator.layers as layers
-from linacdicomimagesuite.algorithms.metrics import run_analysis_on_path
+from FauxPID.algorithms.metrics import run_analysis_on_path
 
 def test_perfect_image():
     simulator_instance = AS1200Image()

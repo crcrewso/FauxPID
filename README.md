@@ -13,7 +13,7 @@ Using UV:
 
 ## How to Use
 
-1. Run `python -m linacdicomimagesuite.app.main`.
+1. Run `python -m FauxPID.app.main`.
 2. Choose an output directory.
 3. Select the image options you want.
 4. Click **Generate**.

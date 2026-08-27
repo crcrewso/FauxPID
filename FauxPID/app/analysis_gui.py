@@ -68,7 +68,7 @@ def _load_project_version() -> str:
 
 
 PROJECT_VERSION = _load_project_version()
-SETTINGS_DIRNAME = ".linacdicomimagesuite"
+SETTINGS_DIRNAME = ".FauxPID"
 SETTINGS_FILENAME = "settings.toml"
 
 
