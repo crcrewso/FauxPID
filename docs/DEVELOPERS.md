@@ -44,5 +44,10 @@ To add/edit algorithms, all metrics live in `metrics.py`. Using the same framewo
 
 All images are generated using pylinac's Image Generator. This all lives in `create_image.py`. You can use the `generate_dicom_using_layers()` function and specify the layers or for more complex images, you can do it yourself (see the artifacts images). 
 
+## Saving as a single file executable
+
+The `FauxPID.spec` contains the specifications for how to convert the file. Developers just need to run
+`pyinstaller --clean FauxPID.spec` to use the spec. 
+
 ## Notes
 tbc
