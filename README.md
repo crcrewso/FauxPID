@@ -1,6 +1,6 @@
-# DICOM Image Suite
+# FauxPID
 
-This project provides a simple GUI for generating DICOM images and running analysis on the output.
+This project provides a simple GUI for generating faux DICOM images and running analysis on the output.
 
 ## Setup 
 
@@ -23,6 +23,10 @@ The app will create the DICOM images and run the analysis automatically.
 ## What Gets Created
 
 The selected output directory will contain a `DICOM_GENERATION_OUTPUT` folder with generated images and analysis results.
+
+## Resources
+
+Files in the resource folder will be copied over to the corresponding image folder upon image generation.
 
 ## Analysis algorithms
 
