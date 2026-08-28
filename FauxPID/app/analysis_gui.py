@@ -482,8 +482,6 @@ class AnalysisGUI(tk.Tk):
             pass  # label colour set via StringVar; extend here if needed
 
 
-# ── YOUR LOGIC GOES HERE ──────────────────────────────────────────────────────
-
 def run_analysis(output_dir, image_type_options, other_options, status_callback):
     """
     Calls image generation and analysis functions based on the user's selections in the GUI.
