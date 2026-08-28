@@ -117,7 +117,9 @@ Positionally the bb is at (2, 3, 6) which corresponds to a 7mm offset.
 
 This case has the bb positionally at the same location as the complex offset of (2, 3, 6). However, the bb is moving in between images causing inconsistent positions. Each image is off by 1mm each time. 
 
+### One off outlier
 
+This case has the complex image set except a single image does not agree with the rest of the set of images. Specifically, "winston_lutz_outlier_gantry_315.dcm" is 5mm off in the x direction. 
 
 
 
