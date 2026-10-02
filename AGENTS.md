@@ -158,6 +158,11 @@ matches the previous version.
   after changing dependencies; never edit it by hand.
 - When adding a module under `FauxPID/`, add it to `hiddenimports` in
   `FauxPID.spec` so the executable build includes it.
+- **Increment the patch version** (the `z` in `x.y.z`) in `pyproject.toml`
+  for every code change, then run `uv lock` so `uv.lock` matches. The
+  version is stamped into every generated DICOM (`SoftwareVersions`), so it
+  is how a set of reference images can be traced back to the code that
+  made it.
 
 ### Language
 
