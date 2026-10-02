@@ -51,3 +51,35 @@ def test_winston_lutz_scenarios_analyze_with_pylinac(tmp_path):
 @NOT_IMPLEMENTED
 def test_generation_is_deterministic_without_noise(tmp_path):
     """With RandomNoiseLayer disabled, generating the same images twice should give identical pixel data."""
+
+
+def test_from_bb_position_reproduces_fixed_position_scenarios():
+    """from_bb_position should give the same offsets as the hand-written tables for scenarios with a fixed BB."""
+    from FauxPID.images.winston_lutz import SCENARIOS, WinstonLutzScenario
+
+    positions = {"perfect": (0, 0, 0), "1mm_right": (1, 0, 0), "1mm_out": (0, -1, 0)}
+    for scenario in SCENARIOS:
+        if scenario.folder not in positions:
+            continue
+        computed = WinstonLutzScenario.from_bb_position(scenario.folder, "", positions[scenario.folder])
+        for axis in ("coll", "couch", "gantry"):
+            assert getattr(computed, axis) == pytest.approx(getattr(scenario, axis)), (scenario.folder, axis)
+
+
+def test_sample_scenario_is_documented_and_not_generated():
+    """SAMPLE_SCENARIO is a template: 1.5 mm in projects 1.5 mm up the image, and it is not in SCENARIOS."""
+    from FauxPID.images.winston_lutz import SAMPLE_SCENARIO, SCENARIOS
+
+    assert SAMPLE_SCENARIO not in SCENARIOS
+    assert SAMPLE_SCENARIO.folder == "1.5mm_in"
+    assert SAMPLE_SCENARIO.coll[0] == (-1.5, 0.0)
+    assert SAMPLE_SCENARIO.gantry[90] == (-1.5, 0.0)
+    assert SAMPLE_SCENARIO.couch[90] == (0.0, -1.5)
+
+
+def test_every_scenario_has_a_description():
+    """Every Winston-Lutz scenario should say in plain language what it simulates."""
+    from FauxPID.images.winston_lutz import SCENARIOS
+
+    for scenario in SCENARIOS:
+        assert scenario.description.strip(), scenario.folder

@@ -59,7 +59,11 @@ Other images have varying degrees of a similar effect. `symmetry_x_and_y_gradien
 
 The generated images contain a bb near the center of the image with a simulated MLC "grid" pattern. Each set of images is seperated into subfolders. The images are from the perspective of the Beam's Eye View (BEV). 
 
-Note that the gantry looking down from the ceiling corresponds to a gantry angle of $0^\circ$ in this dataset. 
+Note that the gantry looking down from the ceiling corresponds to a gantry angle of $0^\circ$ in this dataset.
+
+Each subfolder is one dataset: the same BB setup imaged at every collimator, couch and gantry angle. Folders for a simple BB displacement are named `<distance>mm_<direction>`, where the direction is `right`/`left` (along $x$), `in`/`out` (towards/away from the gantry, along $y$) or `up`/`down` (along $z$). For example, `1mm_out` is 1 mm away from the gantry and `1.5mm_in` would be 1.5 mm closer to the gantry.
+
+The scenarios, their descriptions and a documented template (`SAMPLE_SCENARIO`) for adding new ones are in `FauxPID/images/winston_lutz.py`. `WinstonLutzScenario.from_bb_position()` calculates the projected BB offset for every angle from a BB position, using the rotations described below.
 
 The MLC is simulated using a combination of small negative bbs and lines combined with blurring. 
 
@@ -119,7 +123,7 @@ This case has the bb positionally at the same location as the complex offset of 
 
 ### One off outlier
 
-This case has the complex image set except a single image does not agree with the rest of the set of images. Specifically, "winston_lutz_outlier_gantry_315.dcm" is 5mm off in the x direction. 
+This case has the complex image set except a single image does not agree with the rest of the set of images. Specifically, "winston_lutz_outlier_gantry_315.dcm" has the bb projected 5mm further out (down the image) than the rest of the set. 
 
 
 
