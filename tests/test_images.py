@@ -57,13 +57,25 @@ def test_from_bb_position_reproduces_fixed_position_scenarios():
     """from_bb_position should give the same offsets as the hand-written tables for scenarios with a fixed BB."""
     from FauxPID.images.winston_lutz import SCENARIOS, WinstonLutzScenario
 
-    positions = {"perfect": (0, 0, 0), "1mm_right": (1, 0, 0), "1mm_out": (0, -1, 0)}
+    positions = {
+        "perfect": (0, 0, 0),
+        "1mm_right": (1, 0, 0),
+        "1mm_out": (0, -1, 0),
+        "complex (2, 3, 6)": (2, 3, 6),
+        "outlier": (2, 3, 6),
+    }
+    # The outlier image is deliberately off: 5 mm further down the image than the geometry gives.
+    deliberate_exceptions = {("outlier", "gantry", 315): (2, -2.828)}
     for scenario in SCENARIOS:
         if scenario.folder not in positions:
             continue
         computed = WinstonLutzScenario.from_bb_position(scenario.folder, "", positions[scenario.folder])
         for axis in ("coll", "couch", "gantry"):
-            assert getattr(computed, axis) == pytest.approx(getattr(scenario, axis)), (scenario.folder, axis)
+            expected = dict(getattr(computed, axis))
+            for (folder, exception_axis, angle), offset in deliberate_exceptions.items():
+                if folder == scenario.folder and exception_axis == axis:
+                    expected[angle] = offset
+            assert getattr(scenario, axis) == pytest.approx(expected), (scenario.folder, axis)
 
 
 def test_sample_scenario_is_documented_and_not_generated():

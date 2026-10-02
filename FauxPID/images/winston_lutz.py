@@ -132,8 +132,8 @@ SAMPLE_SCENARIO = WinstonLutzScenario.from_bb_position(
     bb_position_mm=(0, 1.5, 0),
 )
 
-# The tables below are the values the images have always been generated with. Where they were derived from
-# a fixed BB position, from_bb_position() reproduces them except where noted.
+# Where a scenario has a fixed BB position, from_bb_position() reproduces its table exactly (checked in
+# tests/test_images.py). The tables are kept written out so each image's offset can be read at a glance.
 SCENARIOS = [
     WinstonLutzScenario(
         folder="perfect",
@@ -167,11 +167,10 @@ SCENARIOS = [
     WinstonLutzScenario(
         folder="complex (2, 3, 6)",
         description="BB displaced in all three directions, room position (2, 3, 6): 2 mm right, 3 mm in and "
-                    "6 mm up, about 7 mm from isocentre. Couch 45 and 315 use 0.717 where from_bb_position() "
-                    "gives 0.707.",
+                    "6 mm up, about 7 mm from isocentre.",
         file_prefix="winston_lutz_complex",
         coll=_same_offset((-3, 2), COLL_ANGLES),
-        couch={0: (-3, 2), 45: (-3.536, -0.717), 90: (-2, -3), 270: (2, 3), 315: (-0.717, 3.536)},
+        couch={0: (-3, 2), 45: (-3.536, -0.707), 90: (-2, -3), 270: (2, 3), 315: (-0.707, 3.536)},
         gantry={0: (-3, 2), 45: (-3, 5.657), 90: (-3, 6), 135: (-3, 2.828), 180: (-3, -2),
                 225: (-3, -5.657), 270: (-3, -6), 315: (-3, -2.828)},
     ),
@@ -182,7 +181,7 @@ SCENARIOS = [
         file_prefix="winston_lutz_wobble",
         coll={0: (-3.707, 2.293), 45: (-3, 2), 90: (-3.707, 2.707), 135: (-3, 3), 225: (-3, 1),
               270: (-2.03, 2.21), 315: (-3.5, 2.866)},
-        couch={0: (-2, 2), 45: (-4.536, -0.717), 90: (-2.707, -3.707), 270: (2, 2), 315: (-0.717, 4.536)},
+        couch={0: (-2, 2), 45: (-4.536, -0.707), 90: (-2.707, -3.707), 270: (2, 2), 315: (-0.707, 4.536)},
         gantry={0: (-3, 2), 45: (-3.21, 6.634), 90: (-2, 6), 135: (-4, 2.828), 180: (-3, -1),
                 225: (-2.293, -5.05), 270: (-3, -5), 315: (-3, -1.828)},
     ),
@@ -192,7 +191,7 @@ SCENARIOS = [
                     "further down the image (out), so that image disagrees with the rest of the set.",
         file_prefix="winston_lutz_outlier",
         coll=_same_offset((-3, 2), COLL_ANGLES),
-        couch={0: (-3, 2), 45: (-3.536, -0.717), 90: (-2, -3), 270: (2, 3), 315: (-0.717, 3.536)},
+        couch={0: (-3, 2), 45: (-3.536, -0.707), 90: (-2, -3), 270: (2, 3), 315: (-0.707, 3.536)},
         gantry={0: (-3, 2), 45: (-3, 5.657), 90: (-3, 6), 135: (-3, 2.828), 180: (-3, -2),
                 225: (-3, -5.657), 270: (-3, -6), 315: (2, -2.828)},
     ),
