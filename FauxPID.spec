@@ -15,6 +15,10 @@ a = Analysis(
     hiddenimports=[
         "FauxPID.app.analysis_gui",
         "FauxPID.images.create_image",
+        "FauxPID.images.base",
+        "FauxPID.images.artifacts",
+        "FauxPID.images.profiles",
+        "FauxPID.images.winston_lutz",
         "FauxPID.utils.dicom_analysis",
         "FauxPID.utils.dicom_metadata",
         "FauxPID.utils.resource_staging",

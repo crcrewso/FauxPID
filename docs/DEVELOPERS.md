@@ -19,7 +19,7 @@ This project is organized around a small GUI entrypoint and a few helper modules
 `run_analysis(...)` currently:
 
 1. Builds the output path under `DICOM_GENERATION_OUTPUT`.
-2. Generates image files through `create_image.py`.
+2. Generates image files through `ImageGenerator` in `images/create_image.py`.
 3. Runs analysis through `dicom_analysis.py`.
 
 The generated files are written under:
@@ -42,7 +42,15 @@ To add/edit algorithms, all metrics live in `metrics.py`. Using the same framewo
 
 ## Customizing Images
 
-All images are generated using pylinac's Image Generator. This all lives in `create_image.py`. You can use the `generate_dicom_using_layers()` function and specify the layers or for more complex images, you can do it yourself (see the artifacts images). 
+All images are generated using pylinac's Image Generator. The code lives in `FauxPID/images/`:
+
+- `create_image.py` — `ImageGenerator`, the class the GUI uses. Each `generate_*_images()` method writes one folder of images by calling a function in one of the modules below.
+- `base.py` — `BaseImageGenerator`: creating simulators (`new_simulator()`), output folders (`output_dir()`) and saving DICOM/PNG files with metadata (`save()`, `generate_dicom_using_layers()`).
+- `profiles.py` — CAX offset, field size, flatness, symmetry and penumbra images. Most images are a row in a table near the generator function (e.g. `FLATNESS_HORNS`, `SYMMETRY_SLOPES`), so adding a variant is usually one line.
+- `artifacts.py` — images that edit the pixel array directly instead of only stacking layers.
+- `winston_lutz.py` — Winston-Lutz images. Each folder is a `WinstonLutzScenario` in `SCENARIOS`, listing the projected BB offset for each collimator, couch and gantry angle.
+
+For simple images, use `generate_dicom_using_layers()` with a list of layers. For more complex images, build a simulator with `new_simulator()`, modify `simulator_instance.image` as needed and call `save()` (see `artifacts.py`). 
 
 ## Saving as a single file executable
 
