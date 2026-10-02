@@ -79,6 +79,12 @@ def analyze_all(
             msg = f"Failed on {relative}: {exc}"
             status_callback(msg)
             errors.append(msg)
+            # Still write a result file so the failure is visible next to the other results.
+            error_dict = {"error": f"Error analyzing {dcm_path}: {exc}"}
+            if fmt == "json":
+                output_path.write_text(json.dumps(error_dict, indent=4), encoding="utf-8")
+            else:
+                output_path.write_text(pformat(error_dict), encoding="utf-8")
 
     if errors:
         status_callback(f"Analysis done with {len(errors)} error(s).")

@@ -462,7 +462,9 @@ class AnalysisGUI(tk.Tk):
                 self._run_succeeded = True
                 self.after(0, lambda: self._set_status("✔  Done!"))
             except Exception as e:
-                self.after(0, lambda: self._set_status(f"✖  Error: {repr(e)}", error=True))
+                # Format now: `e` is unbound once the except block exits, before the callback runs.
+                message = f"✖  Error: {e!r}"
+                self.after(0, lambda: self._set_status(message, error=True))
             finally:
                 self.after(0, self._on_done)
 

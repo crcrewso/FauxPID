@@ -50,4 +50,12 @@ The `FauxPID.spec` contains the specifications for how to convert the file. Deve
 `pyinstaller --clean FauxPID.spec` to use the spec. 
 
 ## Notes
-tbc
+
+### Open question: profile centering
+
+`run_analysis_on_path` in `metrics.py` analyzes with `Centering.BEAM_CENTER`. This needs exploration before the CAX-based results can be trusted for offset fields:
+
+- `Centering.NONE` may be the more appropriate choice, so that profiles are taken through the image centre (the CAX for these simulated images) rather than through the detected beam centre.
+- The metrics locate the CAX in two different ways: pylinac's `profile.cax_index`, and `get_cax_value()`, which averages the middle element(s) of the profile array. If the centering mode makes these disagree, metrics such as CAX Offset from Beam Center, CAX Variance/Ratio flatness and CAX Point Difference symmetry may use a CAX value from a different pixel than the CAX index.
+
+Suggested exploration: generate the CAX Offset images, run the analysis with each centering mode, and compare `profile.cax_index` with the array midpoint and the known offset.

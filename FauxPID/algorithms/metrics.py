@@ -369,43 +369,44 @@ def run_analysis_on_path(dcm_path) -> dict:
     """
     Takes in a path to a DICOM file and runs analysis on the field profiles using the custom metrics defined above. 
     Returns a dictionary of the results with alias (human readable) names for the metrics.
+    Raises any exception from loading or analyzing the image so callers can report the failure.
     """
-    try:
-        analysis = FieldProfileAnalysis(str(dcm_path))
-        analysis.analyze(
-            centering=Centering.BEAM_CENTER,
-            #centering=Centering.GEOMETRIC_CENTER,
-            normalization=Normalization.NONE,
-            edge_type=Edge.FWHM,
-            ground=True,
-            metrics=(
-                FieldsizeCalculationByFWHM(),
-                CAXOffsetFromBeamCenter(),
+    analysis = FieldProfileAnalysis(str(dcm_path))
+    analysis.analyze(
+        # TODO: needs exploration (see docs/DEVELOPERS.md, "Open question: profile centering").
+        # Centering.NONE may be more appropriate, and the metrics mix profile.cax_index with
+        # get_cax_value() (array midpoint), which may disagree for offset fields.
+        centering=Centering.BEAM_CENTER,
+        #centering=Centering.GEOMETRIC_CENTER,
+        normalization=Normalization.NONE,
+        edge_type=Edge.FWHM,
+        ground=True,
+        metrics=(
+            FieldsizeCalculationByFWHM(),
+            CAXOffsetFromBeamCenter(),
 
-                FlatnessCalculationByVariance(),
-                FlatnessCalculationByRatio(), 
-                FlatnessCalculationByCaxVariance(),
-                FlatnessCalculationByCaxRatio(), 
+            FlatnessCalculationByVariance(),
+            FlatnessCalculationByRatio(), 
+            FlatnessCalculationByCaxVariance(),
+            FlatnessCalculationByCaxRatio(), 
 
-                SymmetryCalculationByCAXPointDifference(),
-                SymmetryCalculationByPointRatio(),
-                SymmetryCalculationByArea(),
-            ),
-        )
-        return analysis.results_data(
-            as_dict=True, 
-            by_alias=True, 
-            exclude={
-                "x_metrics": {"values"}, 
-                "y_metrics": {"values"}, 
-                "centering": True, 
-                "pylinac_version": True, 
-                "normalization": True, 
-                "edge_type": True, 
-                "ground": True,
-                "center": True, 
-            }
-        )
-    except Exception as e:
-        return {"error": f"Error analyzing {dcm_path}: {str(e)}"}
+            SymmetryCalculationByCAXPointDifference(),
+            SymmetryCalculationByPointRatio(),
+            SymmetryCalculationByArea(),
+        ),
+    )
+    return analysis.results_data(
+        as_dict=True, 
+        by_alias=True, 
+        exclude={
+            "x_metrics": {"values"}, 
+            "y_metrics": {"values"}, 
+            "centering": True, 
+            "pylinac_version": True, 
+            "normalization": True, 
+            "edge_type": True, 
+            "ground": True,
+            "center": True, 
+        }
+    )
 
