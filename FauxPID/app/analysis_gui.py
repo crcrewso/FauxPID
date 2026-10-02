@@ -18,6 +18,7 @@ from datetime import datetime
 from ..utils.dicom_analysis import analyze_all
 from ..images.create_image import ImageGenerator
 from ..utils.resource_staging import stage_resources_for_image_type
+from ..utils.dicom_metadata import PROJECT_VERSION
 
 
 # ── Customize your options here ──────────────────────────────────────────────
@@ -56,18 +57,6 @@ DEFAULT_OTHER_OPTIONS = [
 
 # ─────────────────────────────────────────────────────────────────────────────
 
-
-def _load_project_version() -> str:
-    pyproject_path = Path(__file__).resolve().parents[2] / "pyproject.toml"
-    try:
-        with pyproject_path.open("rb") as pyproject_file:
-            project_data = tomllib.load(pyproject_file)
-        return project_data["project"]["version"]
-    except (FileNotFoundError, KeyError, tomllib.TOMLDecodeError):
-        return "0.0.0"
-
-
-PROJECT_VERSION = _load_project_version()
 SETTINGS_DIRNAME = ".FauxPID"
 SETTINGS_FILENAME = "settings.toml"
 

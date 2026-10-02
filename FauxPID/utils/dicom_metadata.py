@@ -4,12 +4,12 @@ import tomllib
 
 import pydicom as dicom
 
-#TODO: May break when converting to EXE, maybe turn the version into a static constant
+#TODO: pyproject.toml is not bundled into the PyInstaller EXE, so the EXE reports "0.0.0". Consider a static constant
 def _load_software_version() -> str:
     """
     Gets the software version from the pyproject.toml file. If the file is not found or the version is not specified, returns "0.0.0".
     """
-    pyproject_path = Path(__file__).with_name("pyproject.toml")
+    pyproject_path = Path(__file__).resolve().parents[2] / "pyproject.toml"  # repository root
     try:
         with pyproject_path.open("rb") as pyproject_file:
             project_data = tomllib.load(pyproject_file)

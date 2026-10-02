@@ -95,3 +95,14 @@ def test_every_scenario_has_a_description():
 
     for scenario in SCENARIOS:
         assert scenario.description.strip(), scenario.folder
+
+
+def test_dicom_software_version_matches_pyproject():
+    """Generated DICOMs are stamped with PROJECT_VERSION, which should be the version in pyproject.toml, not the "0.0.0" fallback."""
+    import tomllib
+    from pathlib import Path
+    from FauxPID.utils.dicom_metadata import PROJECT_VERSION
+
+    pyproject = Path(__file__).resolve().parents[1] / "pyproject.toml"
+    with pyproject.open("rb") as f:
+        assert PROJECT_VERSION == tomllib.load(f)["project"]["version"]
